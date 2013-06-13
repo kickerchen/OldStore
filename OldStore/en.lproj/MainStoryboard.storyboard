@@ -121,7 +121,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" showsUserLocation="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ah3-44-jBw">
-                                <rect key="frame" x="0.0" y="44" width="320" height="455"/>
+                                <rect key="frame" x="0.0" y="44" width="320" height="475"/>
                             </mapView>
                             <navigationBar tag="1" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="20A-5p-nnr">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -216,57 +216,6 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="455"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ShopListCell" id="pO4-7w-z1b">
-                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="3" contentMode="left" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="99w-6B-GUp">
-                                            <rect key="frame" x="251" y="11" width="42" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="42" id="H2V-SJ-TKO"/>
-                                                <constraint firstAttribute="height" constant="21" id="mNo-vz-tUs"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" red="0.41836734693877553" green="0.41836734693877553" blue="0.41836734693877553" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="2" contentMode="left" text="store address" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4g0-CH-4e9">
-                                            <rect key="frame" x="5" y="20" width="225" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="dxD-wU-SNh"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <color key="textColor" red="0.49792729591836737" green="0.49792729591836737" blue="0.49792729591836737" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="left" text="store name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8tc-K2-t9n">
-                                            <rect key="frame" x="5" y="4" width="225" height="21"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="21" id="TdA-yE-EUm"/>
-                                                <constraint firstAttribute="width" constant="225" id="rAK-hT-12X"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                            <color key="textColor" red="0.49350286989795922" green="0.096788214750753901" blue="0.021464895851844527" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="highlightedColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </label>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </view>
-                                <constraints>
-                                    <constraint firstItem="99w-6B-GUp" firstAttribute="top" secondItem="pO4-7w-z1b" secondAttribute="top" constant="11" id="9qn-QQ-STJ"/>
-                                    <constraint firstAttribute="trailing" secondItem="99w-6B-GUp" secondAttribute="trailing" constant="27" id="Coo-M9-Ezo"/>
-                                    <constraint firstItem="8tc-K2-t9n" firstAttribute="leading" secondItem="pO4-7w-z1b" secondAttribute="leading" constant="5" id="FGM-JP-wem"/>
-                                    <constraint firstItem="4g0-CH-4e9" firstAttribute="top" secondItem="pO4-7w-z1b" secondAttribute="top" constant="20" id="VRt-zA-Hgo"/>
-                                    <constraint firstItem="8tc-K2-t9n" firstAttribute="trailing" secondItem="4g0-CH-4e9" secondAttribute="trailing" id="WzK-fK-Y1a"/>
-                                    <constraint firstItem="4g0-CH-4e9" firstAttribute="leading" secondItem="8tc-K2-t9n" secondAttribute="leading" id="XTp-5V-HlZ"/>
-                                    <constraint firstItem="8tc-K2-t9n" firstAttribute="top" secondItem="pO4-7w-z1b" secondAttribute="top" constant="4" id="xTW-vw-Njo"/>
-                                </constraints>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="zIN-Rl-TOs" id="gOY-gO-eRY"/>
                             <outlet property="delegate" destination="zIN-Rl-TOs" id="k10-Wh-h6e"/>

@@ -96,6 +96,7 @@
     self.mapViewController.locationManager.delegate = mapViewController;
     self.mapViewController.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     self.mapViewController.locationManager.distanceFilter = kCLLocationAccuracyHundredMeters;
+    self.databaseManager.locationManager = self.mapViewController.locationManager;
 
     [ self.mapViewController.locationManager startUpdatingLocation ];
     

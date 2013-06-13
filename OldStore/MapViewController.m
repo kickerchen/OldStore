@@ -40,12 +40,10 @@
         
         NSString *name = (NSString *)[ record valueForKey: @"name" ];
         NSString *subtitle = (NSString *)[ record valueForKey: @"address" ];
-        //[ annotation setTitle: name ];
-        //[ annotation setSubtitle: (NSString *)[ record valueForKey: @"address" ] ];
+
         annotation.title = name;
         annotation.subtitle = subtitle;
         
-        //[ self.mapView addAnnotation: annotation ];
         [ annotationArray addObject: annotation ];
     }
     

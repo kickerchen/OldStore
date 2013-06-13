@@ -17,7 +17,7 @@
 
 @implementation DatabaseManager
 
-@synthesize databaseFilePath = _databaseFilePath;
+@synthesize databaseFilePath, locationManager;
 
 #pragma mark -
 #pragma mark Instance methods for CRUD.
@@ -88,7 +88,7 @@
                         break;
                         
                     case SQLITE_TEXT:
-                        column = [ NSString stringWithCString: sqlite3_column_text( statment, i ) encoding:NSUTF8StringEncoding ];
+                        column = [ NSString stringWithCString: (char *)sqlite3_column_text( statment, i ) encoding:NSUTF8StringEncoding ];
                         break;
                         
                     case SQLITE_FLOAT:
@@ -126,7 +126,7 @@
         while ( sqlite3_step( statement ) == SQLITE_ROW ) {            
             NSMutableDictionary *record = [[NSMutableDictionary alloc] init]; // { id: value, name: value }            
             NSNumber *cityId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
-            NSString *cityName = [ NSString stringWithCString: sqlite3_column_text( statement, 1 ) encoding: NSUTF8StringEncoding ];
+            NSString *cityName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 1 ) encoding: NSUTF8StringEncoding ];
             [ record setObject: cityId forKey: @"id" ];
             [ record setObject: cityName forKey: @"name" ];
             [ cities addObject: record ];
@@ -140,7 +140,8 @@
     return cities; // output: [ { id: city1_id, name: city1_name}, {id: city2_id, name: city2_name}, ... ]
 }
 
-- (NSArray *)getRegionByCityId: (NSInteger)cityId {
+- (NSArray *)getRegionByCityId: (NSInteger)cityId
+{
     
     [self openDB];
     NSMutableArray *regions = nil;
@@ -166,7 +167,7 @@
                 NSLog( @"[SQLITE][getRegionByCityId] Sql query 2 returned error" );
             } else {
                 if ( sqlite3_step( statement2 ) == SQLITE_ROW ) {
-                    NSString *regionName = [ NSString stringWithCString: sqlite3_column_text( statement2, 1 ) encoding:NSUTF8StringEncoding ];
+                    NSString *regionName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement2, 1 ) encoding:NSUTF8StringEncoding ];
                     [ record setObject: regionName forKey: @"name" ];
                 } else {
                     [ record setObject: @"No name but id exists in database" forKey: @"name" ];
@@ -183,33 +184,37 @@
     return regions; // // output: [ { id: region1_id, name: region1_name }, { id: region2_id, name: region2_name }, ... ]
 }
 
-- (NSArray *)getShopByCityId: (NSInteger)cityId currentPosition: (CLLocation *)currentPosition {
+- (NSArray *)getShopByCityId: (NSInteger)cityId
+{
     [self openDB];
     NSMutableArray *shops = nil;
     NSString *query;
+    CLLocation *currentPosition = [ locationManager location ];
+    
     if ( currentPosition != nil ) {
-        query = [ NSString stringWithFormat: @"SELECT id, name, address, ( 110.54*110.54*(lat-%f)*(lat-%f) + 101.69588*101.69588*(lng-%f')*(lng-%f) ) AS distance FROM stores WHERE city_id=%d ORDER BY distance", currentPosition.coordinate.latitude, currentPosition.coordinate.latitude, currentPosition.coordinate.longitude, currentPosition.coordinate.longitude, cityId ];
+        query = [ NSString stringWithFormat: @"SELECT id, name, address, ( 110.54*110.54*(lat-%f)*(lat-%f) + 101.69588*101.69588*(lng-%f)*(lng-%f) ) AS distance FROM stores WHERE city_id=%d ORDER BY distance", currentPosition.coordinate.latitude, currentPosition.coordinate.latitude, currentPosition.coordinate.longitude, currentPosition.coordinate.longitude, cityId ];
     } else {
         query = [ NSString stringWithFormat: @"SELECT id, name, address FROM stores WHERE city_id=%d ORDER BY id", cityId ];
     }
     
     sqlite3_stmt *statement = nil;
-    if ( sqlite3_prepare_v2( _database, [ query UTF8String], -1, &statement, NULL ) != SQLITE_OK ) {
+    int returnValue = sqlite3_prepare_v2( _database, [ query UTF8String], -1, &statement, NULL );
+    if ( returnValue != SQLITE_OK ) {
         NSLog( @"[SQLITE][getShopByCityId] Sql query returned error");
     } else {
         shops = [[NSMutableArray alloc] init];
         while ( sqlite3_step( statement ) == SQLITE_ROW ) {
             NSMutableDictionary *record = [[NSMutableDictionary alloc] init];            
             NSNumber *shopId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
-            NSString *shopName = [ NSString stringWithCString: sqlite3_column_text( statement, 1) encoding:NSUTF8StringEncoding ];
-            NSString *shopAddress = [ NSString stringWithCString: sqlite3_column_text( statement, 2) encoding:NSUTF8StringEncoding ];            
+            NSString *shopName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 1 ) encoding:NSUTF8StringEncoding ];
+            NSString *shopAddress = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 2 ) encoding:NSUTF8StringEncoding ];
             [ record setObject: shopId forKey: @"id" ];
             [ record setObject: shopName forKey: @"name" ];
             [ record setObject: shopAddress forKey: @"address" ];
             
             if ( currentPosition != nil ) {
                 NSAssert( sqlite3_column_type( statement, 3 ) == SQLITE_FLOAT, @"[getShopByCityId] Column type shall be float" );
-                NSNumber *shopDistance = [ NSNumber numberWithDouble: sqlite3_column_double( statement, 3 ) ];
+                NSNumber *shopDistance = [ NSNumber numberWithDouble: sqrt(sqlite3_column_double( statement, 3 )) ];
                 [ record setObject: shopDistance forKey: @"distance" ];
             }
 
@@ -222,12 +227,15 @@
     return shops;
 }
 
-- (NSArray *)getShopByGeotag: (NSInteger)geoTagId currentPosition: (CLLocation *)currentPosition {
+- (NSArray *)getShopByGeotag: (NSInteger)geoTagId
+{
     [self openDB];
     NSMutableArray *shops = nil;
     NSString *query;
+    CLLocation *currentPosition = [ locationManager location ];
+    
     if ( currentPosition != nil ) {
-        query = [ NSString stringWithFormat: @"SELECT store_id, name, address, ( 110.54*110.54*(lat-%f)*(lat-%f) + 101.69588*101.69588*(lng-%f')*(lng-%f) ) AS distance FROM stores INNER JOIN store_geotags ON store_geotags.geotag_id=%d WHERE stores.id=store_geotags.store_id ORDER BY distance", currentPosition.coordinate.latitude, currentPosition.coordinate.latitude, currentPosition.coordinate.longitude, currentPosition.coordinate.longitude, geoTagId ];
+        query = [ NSString stringWithFormat: @"SELECT store_id, name, address, ( 110.54*110.54*(lat-%f)*(lat-%f) + 101.69588*101.69588*(lng-%f)*(lng-%f) ) AS distance FROM stores INNER JOIN store_geotags ON store_geotags.geotag_id=%d WHERE stores.id=store_geotags.store_id ORDER BY distance", currentPosition.coordinate.latitude, currentPosition.coordinate.latitude, currentPosition.coordinate.longitude, currentPosition.coordinate.longitude, geoTagId ];
     } else {
         query = [ NSString stringWithFormat: @"SELECT store_id, name, address FROM stores INNER JOIN store_geotags ON store_geotags.geotag_id=%d WHERE stores.id=store_geotags.store_id ORDER BY store_id", geoTagId ];
     }
@@ -240,15 +248,16 @@
         while ( sqlite3_step( statement ) == SQLITE_ROW ) {
             NSMutableDictionary *record = [[NSMutableDictionary alloc] init];
             NSNumber *shopId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
-            NSString *shopName = [ NSString stringWithCString: sqlite3_column_text( statement, 1) encoding:NSUTF8StringEncoding ];
-            NSString *shopAddress = [ NSString stringWithCString: sqlite3_column_text( statement, 2) encoding:NSUTF8StringEncoding ];
+            NSString *shopName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 1 ) encoding:NSUTF8StringEncoding ];
+
+            NSString *shopAddress = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 2 ) encoding:NSUTF8StringEncoding ];
             [ record setObject: shopId forKey: @"id" ];
             [ record setObject: shopName forKey: @"name" ];
             [ record setObject: shopAddress forKey: @"address" ];
             
             if ( currentPosition != nil ) {
                 NSAssert( sqlite3_column_type( statement, 3 ) == SQLITE_FLOAT, @"[getShopByGeotag] Column type shall be float" );
-                NSNumber *shopDistance = [ NSNumber numberWithDouble: sqlite3_column_double( statement, 3 ) ];
+                NSNumber *shopDistance = [ NSNumber numberWithDouble: sqrt(sqlite3_column_double( statement, 3 )) ];
                 [ record setObject: shopDistance forKey: @"distance" ];
             }
             

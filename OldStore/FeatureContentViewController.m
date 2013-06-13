@@ -175,12 +175,12 @@
                 NSArray *regionInACity = [ [ self.queryData objectAtIndex: indexPath.section ] valueForKey: @"regions" ];                
                 if ( indexPath.row == [ regionInACity count] ) { // Get all stores in that city.
                     
-                    storeListViewController.storeList = [ self.databaseManager getShopByCityId: indexPath.section + 1 currentPosition: nil ]; // City id begins from 1.
+                    storeListViewController.storeList = [ self.databaseManager getShopByCityId: indexPath.section + 1 ]; // City id begins from 1.
                     
                 } else { // Get all stores in the selected region.
                     
                     NSNumber *regionId = [ [ regionInACity objectAtIndex: indexPath.row ] valueForKey: @"id" ];
-                    storeListViewController.storeList  = [ self.databaseManager getShopByGeotag: [ regionId integerValue ] currentPosition: nil ];
+                    storeListViewController.storeList  = [ self.databaseManager getShopByGeotag: [ regionId integerValue ] ];
                 }
                 break;
             }

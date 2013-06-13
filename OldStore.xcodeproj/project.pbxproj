@@ -64,8 +64,6 @@
 		79A698F0175FBD3400EC3A98 /* mail.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C1175FBD3400EC3A98 /* mail.png */; };
 		79A698F1175FBD3400EC3A98 /* mail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C2175FBD3400EC3A98 /* mail@2x.png */; };
 		79A698F2175FBD3400EC3A98 /* phone.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C3175FBD3400EC3A98 /* phone.png */; };
-		79A698F3175FBD3400EC3A98 /* 06-magnify.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C5175FBD3400EC3A98 /* 06-magnify.png */; };
-		79A698F4175FBD3400EC3A98 /* 06-magnify@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C6175FBD3400EC3A98 /* 06-magnify@2x.png */; };
 		79A698F5175FBD3400EC3A98 /* 09-chat-2.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C7175FBD3400EC3A98 /* 09-chat-2.png */; };
 		79A698F6175FBD3400EC3A98 /* 09-chat-2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C8175FBD3400EC3A98 /* 09-chat-2@2x.png */; };
 		79A698F7175FBD3400EC3A98 /* 259-list.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698C9175FBD3400EC3A98 /* 259-list.png */; };
@@ -435,8 +433,6 @@
 				79A698F0175FBD3400EC3A98 /* mail.png in Resources */,
 				79A698F1175FBD3400EC3A98 /* mail@2x.png in Resources */,
 				79A698F2175FBD3400EC3A98 /* phone.png in Resources */,
-				79A698F3175FBD3400EC3A98 /* 06-magnify.png in Resources */,
-				79A698F4175FBD3400EC3A98 /* 06-magnify@2x.png in Resources */,
 				79A698F5175FBD3400EC3A98 /* 09-chat-2.png in Resources */,
 				79A698F6175FBD3400EC3A98 /* 09-chat-2@2x.png in Resources */,
 				79A698F7175FBD3400EC3A98 /* 259-list.png in Resources */,

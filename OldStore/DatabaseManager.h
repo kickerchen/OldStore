@@ -12,14 +12,15 @@
 @interface DatabaseManager : NSObject
 
 @property (strong, nonatomic) NSString *databaseFilePath;
+@property (strong, nonatomic) CLLocationManager *locationManager;
 
 - (id)initWithFileName: (NSString *)fileName ofType: (NSString *)typeName;
 //- (void)openDB;  //private method
 //- (void)closeDB;  //private method
 - (NSArray *)getCity;
 - (NSArray *)getRegionByCityId: (NSInteger)cityId;
-- (NSArray *)getShopByGeotag: (NSInteger)geoTagId currentPosition: (CLLocation *)currentPosition;
-- (NSArray *)getShopByCityId: (NSInteger)cityId currentPosition: (CLLocation *)currentPosition;
+- (NSArray *)getShopByGeotag: (NSInteger)geoTagId;
+- (NSArray *)getShopByCityId: (NSInteger)cityId;
 - (NSArray *)sendSQL: (NSString *)sqlQuery;
 
 @end
