@@ -7,6 +7,7 @@
 //
 
 #import "MapViewController.h"
+#import "StoreViewController.h"
 #import "StoreAnnotation.h"
 #import "DatabaseManager.h"
 
@@ -21,6 +22,17 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    UINavigationItem *item = [ self.navigationController.navigationBar.items objectAtIndex: 0 ];
+    UIBarButtonItem *btn = [ item leftBarButtonItem ];
+    btn.tintColor = [ UIColor redColor ];
+    
+    UIImage *locImage = [ UIImage imageNamed: @"22-location-arrow" ];
+    // Use original rendering mode on iOS 7.
+    if ( [ [[UIDevice currentDevice] systemVersion] isEqualToString: @"7.0" ] )
+        locImage = [ locImage imageWithRenderingMode: UIImageRenderingModeAlwaysOriginal ]; // iOS 7 specific method.
+    
+    [ btn setImage: locImage ];
 
     self.mapView.delegate = self;
     self.mapView.showsUserLocation = YES;
@@ -77,6 +89,12 @@
 - (void) showStore:(id)sender
 {
     // Show store details
+    // Navigation logic may go here. Create and push another view controller.
+    
+    StoreViewController *detailViewController = [[StoreViewController alloc] initWithNibName:@"StoreViewController" bundle:nil];
+    // ...
+    // Pass the selected object to the new view controller.
+    [self.navigationController pushViewController: detailViewController animated:YES];
 }
 
 - (MKAnnotationView *) mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation

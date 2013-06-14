@@ -10,24 +10,7 @@
 #import "DatabaseManager.h"
 #import "MapViewController.h"
 #import "FeatureViewController.h"
-
-
-#define WIDTH_IPAD 1024 
-#define WIDTH_IPHONE_5 568
-#define WIDTH_IPHONE_4 480
-#define HEIGHT_IPAD 768
-#define HEIGHT_IPHONE 320
-
-#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-#define IS_IPAD (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-
-//width is height!
-#define IS_IPHONE_5 ( [ [ UIScreen mainScreen ] bounds ].size.height == WIDTH_IPHONE_5 )
-#define IS_IPHONE_4 ( [ [ UIScreen mainScreen ] bounds ].size.height == WIDTH_IPHONE_4 )
-
-#define IS_RETINA ([[UIScreen mainScreen] scale] == 2.0f)
-
-#define IS_GPS_ON ( [ CLLocationManager locationServicesEnabled ] == YES )
+#import "Common.h"
 
 @interface OldStoreAppDelegate()
 
@@ -79,17 +62,13 @@
     /////////////////////////////////////////
     // Setup map view controller.
     //
-    self.mapViewController = [ navController.viewControllers objectAtIndex: 0 ];
+    UINavigationController *mapNavController = [ navController.viewControllers objectAtIndex: 0 ];
+    self.mapViewController = [ mapNavController.viewControllers objectAtIndex: 0 ];
     self.mapViewController.databaseManager = self.databaseManager;
     
     // Set nav bar title and background.
-    UINavigationBar *mapNavBar = ( UINavigationBar * )[ self.mapViewController.view viewWithTag: 1 ];
-    [ mapNavBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
-    [ mapNavBar.topItem setTitle: NSLocalizedString( @"Nearby", nil ) ];
-    
-    UINavigationItem *item = [ mapNavBar.items objectAtIndex: 0 ];
-    UIBarButtonItem *btn = [ item leftBarButtonItem ];
-    btn.tintColor = [ UIColor redColor ];
+    [ mapNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
+    [ mapNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Nearby", nil ) ];
     
     // Setup location manager with desired accracy and distance filter.
     self.mapViewController.locationManager = [ [CLLocationManager alloc] init ];

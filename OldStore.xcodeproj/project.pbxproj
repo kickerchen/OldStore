@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79721444176A35B700BD15A4 /* StoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79721442176A35B700BD15A4 /* StoreViewController.m */; };
+		79721445176A35B700BD15A4 /* StoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79721443176A35B700BD15A4 /* StoreViewController.xib */; };
 		7989989D1765935B003EEE46 /* StoreAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7989989C1765935B003EEE46 /* StoreAnnotation.m */; };
 		79A698581755E71300EC3A98 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A698571755E71300EC3A98 /* UIKit.framework */; };
 		79A6985A1755E71300EC3A98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A698591755E71300EC3A98 /* Foundation.framework */; };
@@ -76,6 +78,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		79721441176A35B700BD15A4 /* StoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoreViewController.h; sourceTree = "<group>"; };
+		79721442176A35B700BD15A4 /* StoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoreViewController.m; sourceTree = "<group>"; };
+		79721443176A35B700BD15A4 /* StoreViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoreViewController.xib; sourceTree = "<group>"; };
+		79721446176AF96C00BD15A4 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		7989989B1765935B003EEE46 /* StoreAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoreAnnotation.h; sourceTree = "<group>"; };
 		7989989C1765935B003EEE46 /* StoreAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoreAnnotation.m; sourceTree = "<group>"; };
 		79A698541755E71300EC3A98 /* OldStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OldStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -207,6 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				79A6989B175FBD3300EC3A98 /* image */,
+				79721446176AF96C00BD15A4 /* Common.h */,
 				79A698661755E71300EC3A98 /* OldStoreAppDelegate.h */,
 				79A698671755E71300EC3A98 /* OldStoreAppDelegate.m */,
 				79A698921758BE2C00EC3A98 /* DatabaseManager.h */,
@@ -224,6 +231,9 @@
 				79A698891757253A00EC3A98 /* FeatureContentViewController.m */,
 				79A6988B1757420500EC3A98 /* StoreListViewController.h */,
 				79A6988C1757420500EC3A98 /* StoreListViewController.m */,
+				79721441176A35B700BD15A4 /* StoreViewController.h */,
+				79721442176A35B700BD15A4 /* StoreViewController.m */,
+				79721443176A35B700BD15A4 /* StoreViewController.xib */,
 				79A6985E1755E71300EC3A98 /* Supporting Files */,
 			);
 			path = OldStore;
@@ -365,6 +375,15 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = KICKERCHEN;
+				TargetAttributes = {
+					79A698531755E71300EC3A98 = {
+						SystemCapabilities = {
+							com.apple.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+				};
 			};
 			buildConfigurationList = 79A6984F1755E71300EC3A98 /* Build configuration list for PBXProject "OldStore" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -419,6 +438,7 @@
 				79A698E2175FBD3400EC3A98 /* 19-clock.png in Resources */,
 				79A698E3175FBD3400EC3A98 /* 19-clock@2x.png in Resources */,
 				79A698E4175FBD3400EC3A98 /* 208-facebook.png in Resources */,
+				79721445176A35B700BD15A4 /* StoreViewController.xib in Resources */,
 				79A698E5175FBD3400EC3A98 /* 38-house.png in Resources */,
 				79A698E6175FBD3400EC3A98 /* 38-house@2x.png in Resources */,
 				79A698E7175FBD3400EC3A98 /* 75-phone.png in Resources */,
@@ -456,6 +476,7 @@
 				79A698741755E71300EC3A98 /* MapViewController.m in Sources */,
 				79A698871755E79500EC3A98 /* FeatureViewController.m in Sources */,
 				79A6988A1757253A00EC3A98 /* FeatureContentViewController.m in Sources */,
+				79721444176A35B700BD15A4 /* StoreViewController.m in Sources */,
 				79A6988D1757420500EC3A98 /* StoreListViewController.m in Sources */,
 				79A698941758BE2D00EC3A98 /* DatabaseManager.m in Sources */,
 				7989989D1765935B003EEE46 /* StoreAnnotation.m in Sources */,

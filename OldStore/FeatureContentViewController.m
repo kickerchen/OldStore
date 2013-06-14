@@ -9,6 +9,7 @@
 #import "FeatureContentViewController.h"
 #import "StoreListViewController.h"
 #import "DatabaseManager.h"
+#import "Common.h"
 
 @interface FeatureContentViewController ()
 @property (nonatomic) NSMutableArray *queryData;
@@ -16,9 +17,7 @@
 
 @implementation FeatureContentViewController
 
-@synthesize featureItem = _featureItem;
-@synthesize databaseManager = _databaseManager;
-@synthesize queryData = _queryData;
+@synthesize featureItem, databaseManager, queryData;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -35,17 +34,15 @@
 
     self.queryData = [[NSMutableArray alloc] init];
     
-    switch ( _featureItem ) {
+    switch ( self.featureItem ) {
         case regionsFeatureItem: {
             
             NSArray *cityList = [self.databaseManager getCity];            
             // For each city, query its regions.
             for ( int i = 0; i < [cityList count]; ++i ) {
                 NSString *cityName = [ [ cityList objectAtIndex: i ] valueForKey: @"name" ];
-                NSMutableDictionary *regionsInACity = [[NSMutableDictionary alloc] init];
-                [ regionsInACity setObject: cityName forKey: @"cityName" ];
-                [ regionsInACity setObject: [self.databaseManager getRegionByCityId: i+1] forKey: @"regions" ]; // city id begins from 1.
-                [ self.queryData addObject: regionsInACity ];
+                [ self.queryData addObject: @{ @"cityName": cityName,
+                                               @"regions": [self.databaseManager getRegionByCityId: i+1] } ]; // city id begins from 1.
             }
             break;
         }
@@ -69,7 +66,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    if ( _featureItem == regionsFeatureItem ) {
+    if ( self.featureItem == regionsFeatureItem ) {
         return [self.queryData count];
     } else {
         return 0;
@@ -79,7 +76,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if( _featureItem == regionsFeatureItem ) {
+    if( self.featureItem == regionsFeatureItem ) {
         NSArray *regionsInACity = [ [ self.queryData objectAtIndex: section ] valueForKey: @"regions" ];
         return [regionsInACity count] + 1;
     } else {
@@ -90,7 +87,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     // Set title only for feature: regions
-    if ( _featureItem == regionsFeatureItem ) {
+    if ( self.featureItem == regionsFeatureItem ) {
         return [ [ self.queryData objectAtIndex: section ] valueForKey: @"cityName" ];
     }
     
@@ -99,14 +96,14 @@
 
 - (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    if ( _featureItem == regionsFeatureItem ) {
+    if ( self.featureItem == regionsFeatureItem ) {
 
         UIView *headerView = [ [UIView alloc] initWithFrame: CGRectMake( 0, 0, tableView.bounds.size.width, 30 ) ];
-        [ headerView setBackgroundColor: [ UIColor colorWithRed: 0.0 green: 0.0 blue: 0.0 alpha: 0.25 ] ];
+        [ headerView setBackgroundColor: RGBA( 0, 0.25 ) ];
     
         UILabel *label = [ [UILabel alloc] initWithFrame: CGRectMake( 5, 3, tableView.bounds.size.width-10, 18) ];
         label.text = [ [ self.queryData objectAtIndex: section ] valueForKey: @"cityName" ];
-        label.textColor = [ UIColor colorWithRed: 1.0 green: 1.0 blue: 1.0 alpha: 0.75 ];
+        label.textColor = RGBA( 0xFFFFFF, 0.75 );
         label.backgroundColor = [ UIColor clearColor ];
         [ headerView addSubview: label ];
         return headerView;
@@ -125,11 +122,12 @@
     }
     
     // Configure the cell...
+    [ cell setBackgroundColor: [UIColor clearColor] ];
     UILabel *label = (UILabel *)[ cell viewWithTag: 1 ];
-    label.textColor = [ UIColor colorWithRed: 0.0 green: 0.0 blue: 0.0 alpha: 1.0 ];
+    label.textColor = RGBA( 0, 1.0 );
     label.font = [ UIFont boldSystemFontOfSize:16 ];
     
-    switch ( _featureItem ) {
+    switch ( self.featureItem ) {
         case regionsFeatureItem: {
             NSArray *regionsInACity = [ [ self.queryData objectAtIndex: indexPath.section ] valueForKey: @"regions" ];
             if ( indexPath.row == [ regionsInACity count ] ) { // Last row is to show all stores in that city.

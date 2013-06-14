@@ -7,7 +7,9 @@
 //
 
 #import "StoreListViewController.h"
+#import "StoreViewController.h"
 #import "DatabaseManager.h"
+#import "Common.h"
 
 @interface StoreListViewController ()
 
@@ -70,7 +72,7 @@
     NSAssert( store != nil, @"storelist return nil\n" );
     NSString *storeName = [ store valueForKey: @"name" ];
     NSString *storeAddress = [ store valueForKey: @"address" ];
-    NSNumber *storeDistance = [store valueForKey:@"distance"];
+    NSNumber *storeDistance = [store valueForKey: @"distance"];
     
     UILabel *nameLabel, *addressLabel, *distanceLabel;
     if ( cell.contentView.subviews.count < 3 ) { // If 3 subviews have been created, just change text and reuse for performance.
@@ -79,14 +81,14 @@
         
         // Name label setting.
         nameLabel = [[UILabel alloc] initWithFrame: CGRectMake( 5, 12, 240, 20 )];
-        nameLabel.textColor = [ UIColor colorWithRed: (139.0/255.0) green: (0.0/255.0) blue: (0.0/255.0) alpha: 1.0 ]; //8B00000
+        nameLabel.textColor = RGBA( 0x8B0000, 1.0 );
         nameLabel.font = [UIFont systemFontOfSize:18.0];
         nameLabel.backgroundColor = [ UIColor clearColor ];
         [ cell.contentView addSubview: nameLabel ];
         
         // Address label setting.
         addressLabel = [[UILabel alloc] initWithFrame: CGRectMake( 5, 33, 240, 20 )];
-        addressLabel.textColor = [ UIColor colorWithRed: (59.0/255.0) green: (59.0/255.0) blue: (59.0/255.0) alpha: 1.0 ]; // 3B3B3B
+        addressLabel.textColor = RGBA( 0x3B3B3B, 1.0 );
         addressLabel.font = [UIFont systemFontOfSize:12.0];
         addressLabel.backgroundColor = [ UIColor clearColor ];
         [ cell.contentView addSubview: addressLabel ];
@@ -94,7 +96,7 @@
         // Distance label setting.
         distanceLabel =  [[UILabel alloc] initWithFrame: CGRectMake( 235, 22, 60, 18)];
         distanceLabel.textAlignment = NSTextAlignmentRight;
-        distanceLabel.textColor = [ UIColor colorWithRed: (59.0/255.0) green: (59.0/255.0) blue: (59.0/255.0) alpha: 1.0 ]; // 3B3B3B
+        distanceLabel.textColor = RGBA( 0x3B3B3B, 1.0 );
         distanceLabel.font = [ UIFont systemFontOfSize: 14.0 ];
         distanceLabel.backgroundColor = [ UIColor clearColor ];
         [ cell.contentView addSubview: distanceLabel ];
@@ -124,12 +126,18 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    
+    StoreViewController *detailViewController = [[StoreViewController alloc] initWithNibName:@"StoreViewController" bundle:nil];
+    
+    // Set relevant data members.
+    NSDictionary *store = [ self.storeList objectAtIndex: indexPath.row ];
+    detailViewController.storeId = [ [ store valueForKey: @"id" ] integerValue ];
+    detailViewController.databaseManager = self.databaseManager;
+    
+    // ...
+    // Pass the selected object to the new view controller.
+    [self.navigationController pushViewController: detailViewController animated:YES];
+     
 }
 
 @end

@@ -83,16 +83,21 @@
                 int type = sqlite3_column_type( statment, i );
                 id column = nil;
                 switch ( type ) {
-                    case SQLITE_INTEGER:
+                    case SQLITE_INTEGER: // 1
                         column = [ NSNumber numberWithInt: sqlite3_column_int( statment, i ) ];
                         break;
+
+                    case SQLITE_FLOAT:  // 2
+                        column = [ NSNumber numberWithDouble: sqlite3_column_double( statment, i ) ];
+                        break;
                         
-                    case SQLITE_TEXT:
+                    case SQLITE_TEXT: // 3
                         column = [ NSString stringWithCString: (char *)sqlite3_column_text( statment, i ) encoding:NSUTF8StringEncoding ];
                         break;
                         
-                    case SQLITE_FLOAT:
-                        column = [ NSNumber numberWithDouble: sqlite3_column_double( statment, i ) ];
+                    case SQLITE_BLOB: // 4
+                        column = [ NSData dataWithBytes: sqlite3_column_blob( statment, i ) length: sqlite3_column_bytes( statment, i ) ];
+                        
                         break;
                         
                     default:
@@ -123,13 +128,10 @@
         NSLog( @"[SQLITE][getCity] Sql query error returned" );
     } else {        
         cities = [NSMutableArray array];
-        while ( sqlite3_step( statement ) == SQLITE_ROW ) {            
-            NSMutableDictionary *record = [[NSMutableDictionary alloc] init]; // { id: value, name: value }            
+        while ( sqlite3_step( statement ) == SQLITE_ROW ) {                      
             NSNumber *cityId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
             NSString *cityName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 1 ) encoding: NSUTF8StringEncoding ];
-            [ record setObject: cityId forKey: @"id" ];
-            [ record setObject: cityName forKey: @"name" ];
-            [ cities addObject: record ];
+            [ cities addObject: @{ @"id": cityId, @"name": cityName } ];
         }        
     }
     
@@ -156,25 +158,19 @@
         regions = [NSMutableArray array];
         while ( sqlite3_step( statement ) == SQLITE_ROW ) {
             
-            NSMutableDictionary *record = [[NSMutableDictionary alloc] init]; // { id: region_id, name: region_name }
-            NSNumber *regionId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
-            [ record setObject: regionId forKey: @"id"];
-            
             // Query 2: query region name by region id.
+            NSString *regionName;
+            NSNumber *regionId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
             sqlite3_stmt *statement2 = nil;
             NSString *queryRegionName = [NSString stringWithFormat: @"SELECT id, name FROM geotags WHERE id=%@", regionId];
-            if (sqlite3_prepare_v2( _database, [ queryRegionName UTF8String ], -1, &statement2, NULL ) != SQLITE_OK ) {
+            if ( sqlite3_prepare_v2( _database, [ queryRegionName UTF8String ], -1, &statement2, NULL ) != SQLITE_OK ) {
                 NSLog( @"[SQLITE][getRegionByCityId] Sql query 2 returned error" );
             } else {
-                if ( sqlite3_step( statement2 ) == SQLITE_ROW ) {
-                    NSString *regionName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement2, 1 ) encoding:NSUTF8StringEncoding ];
-                    [ record setObject: regionName forKey: @"name" ];
-                } else {
-                    [ record setObject: @"No name but id exists in database" forKey: @"name" ];
-                }
+                if ( sqlite3_step( statement2 ) == SQLITE_ROW )
+                    regionName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement2, 1 ) encoding:NSUTF8StringEncoding ];
             }
             
-            [ regions addObject: record ];
+            [ regions addObject: @{ @"id": regionId, @"name": regionName } ];
             if ( statement2 ) sqlite3_finalize( statement2 );
         }
     }
