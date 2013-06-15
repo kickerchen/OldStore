@@ -96,15 +96,19 @@
                         break;
                         
                     case SQLITE_BLOB: // 4
-                        column = [ NSData dataWithBytes: sqlite3_column_blob( statment, i ) length: sqlite3_column_bytes( statment, i ) ];
+                        column = [ NSData dataWithBytes: sqlite3_column_blob( statment, i ) length: sqlite3_column_bytes( statment, i ) ];                        
+                        break;
                         
+                    case SQLITE_NULL: // 5
+                        column = [ NSNull null ];
                         break;
                         
                     default:
                         NSLog( @"[SQLITE][sendSQL] Unknown data type.\n" );
                         break;
                 }
-                [ record setObject: column forKey: [NSString stringWithCString: sqlite3_column_name( statment, i ) encoding: NSUTF8StringEncoding] ];
+                if ( column != nil )
+                    [ record setObject: column forKey: [NSString stringWithCString: sqlite3_column_name( statment, i ) encoding: NSUTF8StringEncoding] ];
             }
             [ results addObject: record ];
         }

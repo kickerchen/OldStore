@@ -10,7 +10,7 @@
 
 @implementation StoreAnnotation
 
-@synthesize coordinate, title, subtitle;
+@synthesize coordinate, storeID, title, subtitle;
 
 #pragma mark -
 #pragma mark MKAnnotation delegate

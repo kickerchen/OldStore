@@ -129,6 +129,9 @@
     
     StoreViewController *detailViewController = [[StoreViewController alloc] initWithNibName:@"StoreViewController" bundle:nil];
     
+    // Set title of nav bar.
+    [ detailViewController setTitle: NSLocalizedString( @"Store Info", nil ) ];
+    
     // Set relevant data members.
     NSDictionary *store = [ self.storeList objectAtIndex: indexPath.row ];
     detailViewController.storeId = [ [ store valueForKey: @"id" ] integerValue ];

@@ -10,6 +10,7 @@
 #import "StoreViewController.h"
 #import "StoreAnnotation.h"
 #import "DatabaseManager.h"
+#import "Common.h"
 
 @interface MapViewController ()
 
@@ -29,7 +30,7 @@
     
     UIImage *locImage = [ UIImage imageNamed: @"22-location-arrow" ];
     // Use original rendering mode on iOS 7.
-    if ( [ [[UIDevice currentDevice] systemVersion] isEqualToString: @"7.0" ] )
+    if ( IS_IOS_7 )
         locImage = [ locImage imageWithRenderingMode: UIImageRenderingModeAlwaysOriginal ]; // iOS 7 specific method.
     
     [ btn setImage: locImage ];
@@ -53,6 +54,7 @@
         NSString *name = (NSString *)[ record valueForKey: @"name" ];
         NSString *subtitle = (NSString *)[ record valueForKey: @"address" ];
 
+        annotation.storeID = [ [ record valueForKey: @"id" ] integerValue ];
         annotation.title = name;
         annotation.subtitle = subtitle;
         
@@ -86,13 +88,20 @@
 #pragma mark -
 #pragma mark MKMapViewDelegate
 
-- (void) showStore:(id)sender
+- (void) showStore:(UIButton *)sender
 {
     // Show store details
     // Navigation logic may go here. Create and push another view controller.
     
     StoreViewController *detailViewController = [[StoreViewController alloc] initWithNibName:@"StoreViewController" bundle:nil];
-    // ...
+    
+    // Set title of nav bar.
+    [ detailViewController setTitle: NSLocalizedString( @"Store Info", nil ) ];
+    
+    // Set relevant data members.
+    detailViewController.storeId = sender.tag;
+    detailViewController.databaseManager = self.databaseManager;
+    
     // Pass the selected object to the new view controller.
     [self.navigationController pushViewController: detailViewController animated:YES];
 }
@@ -112,6 +121,7 @@
             [ rightButton addTarget: self
                              action: @selector( showStore: )
                    forControlEvents: UIControlEventTouchUpInside ];
+            rightButton.tag = ((StoreAnnotation *)annotation).storeID;
             storePinView.rightCalloutAccessoryView = rightButton;
             
         } else {

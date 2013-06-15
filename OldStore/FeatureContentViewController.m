@@ -36,14 +36,25 @@
     
     switch ( self.featureItem ) {
         case regionsFeatureItem: {
+
+            // Set title of nav bar.
+            [ self setTitle: NSLocalizedString( @"Regions", nil ) ];
             
+            // Query data source.
             NSArray *cityList = [self.databaseManager getCity];            
-            // For each city, query its regions.
             for ( int i = 0; i < [cityList count]; ++i ) {
                 NSString *cityName = [ [ cityList objectAtIndex: i ] valueForKey: @"name" ];
                 [ self.queryData addObject: @{ @"cityName": cityName,
                                                @"regions": [self.databaseManager getRegionByCityId: i+1] } ]; // city id begins from 1.
             }
+            break;
+        }
+            
+        case categoriesFeatureItem: {
+            break;
+        }
+            
+        case agesFeatureItem: {
             break;
         }
             

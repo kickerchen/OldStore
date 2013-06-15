@@ -10,7 +10,7 @@
 
 @class DatabaseManager;
 
-@interface StoreViewController : UITableViewController
+@interface StoreViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) DatabaseManager *databaseManager;
 @property (nonatomic) NSInteger storeId;

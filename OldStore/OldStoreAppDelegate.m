@@ -67,6 +67,7 @@
     self.mapViewController.databaseManager = self.databaseManager;
     
     // Set nav bar title and background.
+    [ mapNavController.navigationBar setTintColor: [ UIColor redColor ] ];
     [ mapNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
     [ mapNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Nearby", nil ) ];
     
@@ -82,11 +83,12 @@
     /////////////////////////////////////////
     // Setup feature view controller.
     //
-    UINavigationController *featureNavController = [ navController.viewControllers objectAtIndex: 1 ];    
+    UINavigationController *featureNavController = [ navController.viewControllers objectAtIndex: 1 ];
     self.featureViewController = [ featureNavController.viewControllers objectAtIndex: 0 ];
     self.featureViewController.databaseManager = self.databaseManager;
     
-    // Set nav bar title and background.
+    // Set nav bar tint color(for back button), title and background.
+    [ featureNavController.navigationBar setTintColor: [ UIColor redColor ] ];
     [ featureNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
     [ featureNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Featured", nil ) ];
     

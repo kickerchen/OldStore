@@ -264,32 +264,6 @@
         <image name="259-list" width="16" height="16"/>
         <image name="73-radar" width="16" height="16"/>
     </resources>
-    <classes>
-        <class className="FeatureContentViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeatureContentViewController.h"/>
-        </class>
-        <class className="FeatureViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/FeatureViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="agesCell" candidateClass="UITableViewCell"/>
-                <relationship kind="outlet" name="categoriesCell" candidateClass="UITableViewCell"/>
-                <relationship kind="outlet" name="regionsCell" candidateClass="UITableViewCell"/>
-            </relationships>
-        </class>
-        <class className="MapViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/MapViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="locateTheUser:" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="mapView" candidateClass="MKMapView"/>
-            </relationships>
-        </class>
-        <class className="NSLayoutConstraint" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-        <class className="StoreListViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/StoreListViewController.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
