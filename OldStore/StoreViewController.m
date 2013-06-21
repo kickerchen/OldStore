@@ -6,10 +6,11 @@
 //  Copyright (c) 2013年 KICKERCHEN. All rights reserved.
 //
 
+#import <MessageUI/MessageUI.h>
+
 #import "OldStoreAppDelegate.h"
 #import "StoreViewController.h"
 #import "DatabaseManager.h"
-#import "MapViewController.h"
 #import "WebViewController.h"
 #import "SVWebViewController.h"
 #import "Common.h"
@@ -63,7 +64,7 @@ typedef enum {
 
 @end
 
-@interface StoreViewController ()
+@interface StoreViewController () <UIAlertViewDelegate, MFMailComposeViewControllerDelegate>
 @property (nonatomic, strong) NSDictionary *storeDetails; // store information returned by SQL
 @property (nonatomic, strong) NSMutableArray *dataSourceArray; // used for view construction
 @property (nonatomic, strong) NSMutableArray *sectionStack; // used for section type identification
@@ -532,26 +533,80 @@ typedef enum {
     NSNumber *sectionType = (NSNumber *)[ self.sectionStack objectAtIndex: indexPath.section ];
     if ( SectionTypeInfo == [sectionType intValue] ) {
         NSString *key = [ self.infoKeyStack objectAtIndex: indexPath.row ];
-        if ( [key isEqualToString: kAddressKey] ) {
-            MapViewController *map = [
-        } else if ( [key isEqualToString: kTelKey] ) {
+        NSDictionary *storeInfo = [ self.dataSourceArray objectAtIndex: indexPath.section ];
+        
+        if ( [key isEqualToString: kAddressKey] ) { // open apple map
+            
+            NSString *queryString = [ NSString stringWithFormat: @"http://maps.apple.com/maps?q=%@,%@", [self.storeDetails valueForKey: @"lat"], [self.storeDetails valueForKey: @"lng"] ];
+            [ [ UIApplication sharedApplication ] openURL: [ NSURL URLWithString: queryString ] ];
+            
+        } else if ( [key isEqualToString: kTelKey] ) { // make a call
+            
+            NSString *tel = [ storeInfo valueForKey: kTelKey ];
+            UIAlertView *alert = [ [UIAlertView alloc] initWithTitle: NSLocalizedString( @"Make phone call?", nil )
+                                                             message: tel
+                                                            delegate: self
+                                                   cancelButtonTitle: NSLocalizedString( @"Cancel", nil )
+                                                   otherButtonTitles:NSLocalizedString( @"Ok", nil ), nil ];
+            [alert show];
+        
+        } else if ( [key isEqualToString: kEmailKey] ) { // send e-mail
+            
+            if ( NO == [ MFMailComposeViewController canSendMail ] ) {
+                UIAlertView *mailAlert = [ [UIAlertView alloc] initWithTitle: NSLocalizedString( @"Failure", nil )
+                                                                     message: NSLocalizedString( @"Your device cannot send E-mail now", nil )
+                                                                    delegate: self
+                                                           cancelButtonTitle: NSLocalizedString( @"Ok", nil )
+                                                           otherButtonTitles: nil, nil ];
+                [ mailAlert show ];
+            } else {
+                MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
+                mailer.mailComposeDelegate = self;
+                //[ mailer setSubject: @"subject"];
+                [ mailer setToRecipients: @[ [storeInfo valueForKey: kEmailKey] ]];
+                //[ mailer setMessageBody: @"msgBody" isHTML: NO ];
+                [ self presentViewController: mailer animated: YES completion: NULL ];
+            }
             
         } else if ( [key isEqualToString: kWebKey] || [key isEqualToString: kBlogKey] || [key isEqualToString: kFBKey] ) {
+            
             WebViewController *browser = [ [WebViewController alloc] initWithNibName: @"WebViewController" bundle: nil ];
-            browser.urlString = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] valueForKey: key ];
+            browser.urlString = [ storeInfo valueForKey: key ];
             
             // Use the following marked code to implement a full-screen browser instead of opening url explicitly.
             //UITabBarController *tabBar = (UITabBarController *)[[ [ UIApplication sharedApplication ] keyWindow ] rootViewController ];
             //[ [ tabBar view ] addSubview: browser.view ];
-
             [ [ UIApplication sharedApplication ] openURL: [ NSURL URLWithString: browser.urlString ] ];
+            
         }
+        
     } else if ( SectionTypeMedia == [sectionType intValue] ) {
+        
         NSDictionary *media = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] objectAtIndex: indexPath.row ];
         NSString *url = [ media valueForKey: kMediaSectionURLKey ];
         SVWebViewController *browser = [ [SVWebViewController alloc] initWithAddress: url ];
         [ self.navigationController pushViewController: browser animated: YES ];
+        
     }
+}
+
+#pragma mark -
+#pragma mark UIAlertViewDelegate methods
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if ( 1 == buttonIndex ) {
+        NSString *tel = [ [ self.dataSourceArray objectAtIndex: 0 ] valueForKey: kTelKey ];
+        [ [UIApplication sharedApplication] openURL: [NSURL URLWithString: [ NSString stringWithFormat: @"tel:%@", tel ]] ];
+    }    
+}
+
+#pragma mark -
+#pragma mark MFMailComposerViewControllerDelegate methods
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    [ self dismissViewControllerAnimated: YES completion: NULL ];
 }
 
 @end

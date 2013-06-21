@@ -7,9 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7911F9FE177072F100529DE3 /* SVWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7911F9FD177072F100529DE3 /* SVWebViewController.m */; };
+		7911FA011770731900529DE3 /* SVModalWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7911FA001770731900529DE3 /* SVModalWebViewController.m */; };
+		7911FA03177078DE00529DE3 /* SVWebViewController.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7911FA02177078DE00529DE3 /* SVWebViewController.bundle */; };
+		7911FA05177079C500529DE3 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7911FA04177079C500529DE3 /* MessageUI.framework */; };
+		7911FA10177417CB00529DE3 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7911FA0E177417CB00529DE3 /* WebViewController.m */; };
+		7911FA11177417CB00529DE3 /* WebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7911FA0F177417CB00529DE3 /* WebViewController.xib */; };
 		79721444176A35B700BD15A4 /* StoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79721442176A35B700BD15A4 /* StoreViewController.m */; };
 		79721445176A35B700BD15A4 /* StoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79721443176A35B700BD15A4 /* StoreViewController.xib */; };
-		7989989D1765935B003EEE46 /* StoreAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 7989989C1765935B003EEE46 /* StoreAnnotation.m */; };
 		79A698581755E71300EC3A98 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A698571755E71300EC3A98 /* UIKit.framework */; };
 		79A6985A1755E71300EC3A98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A698591755E71300EC3A98 /* Foundation.framework */; };
 		79A6985C1755E71300EC3A98 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A6985B1755E71300EC3A98 /* CoreGraphics.framework */; };
@@ -78,12 +83,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7911F9FC177072F100529DE3 /* SVWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVWebViewController.h; sourceTree = "<group>"; };
+		7911F9FD177072F100529DE3 /* SVWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVWebViewController.m; sourceTree = "<group>"; };
+		7911F9FF1770731900529DE3 /* SVModalWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVModalWebViewController.h; sourceTree = "<group>"; };
+		7911FA001770731900529DE3 /* SVModalWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVModalWebViewController.m; sourceTree = "<group>"; };
+		7911FA02177078DE00529DE3 /* SVWebViewController.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVWebViewController.bundle; sourceTree = "<group>"; };
+		7911FA04177079C500529DE3 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		7911FA0D177417CB00529DE3 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
+		7911FA0E177417CB00529DE3 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
+		7911FA0F177417CB00529DE3 /* WebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WebViewController.xib; sourceTree = "<group>"; };
 		79721441176A35B700BD15A4 /* StoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoreViewController.h; sourceTree = "<group>"; };
 		79721442176A35B700BD15A4 /* StoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoreViewController.m; sourceTree = "<group>"; };
 		79721443176A35B700BD15A4 /* StoreViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoreViewController.xib; sourceTree = "<group>"; };
 		79721446176AF96C00BD15A4 /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
-		7989989B1765935B003EEE46 /* StoreAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoreAnnotation.h; sourceTree = "<group>"; };
-		7989989C1765935B003EEE46 /* StoreAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoreAnnotation.m; sourceTree = "<group>"; };
 		79A698541755E71300EC3A98 /* OldStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OldStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		79A698571755E71300EC3A98 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		79A698591755E71300EC3A98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -172,6 +184,7 @@
 				79A6985A1755E71300EC3A98 /* Foundation.framework in Frameworks */,
 				79A6985C1755E71300EC3A98 /* CoreGraphics.framework in Frameworks */,
 				79A69898175F277C00EC3A98 /* CoreLocation.framework in Frameworks */,
+				7911FA05177079C500529DE3 /* MessageUI.framework in Frameworks */,
 				79A698FE1761C5DF00EC3A98 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -179,6 +192,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7911FA0617707A7600529DE3 /* modules */ = {
+			isa = PBXGroup;
+			children = (
+				7911FA02177078DE00529DE3 /* SVWebViewController.bundle */,
+				7911F9FF1770731900529DE3 /* SVModalWebViewController.h */,
+				7911FA001770731900529DE3 /* SVModalWebViewController.m */,
+				7911F9FC177072F100529DE3 /* SVWebViewController.h */,
+				7911F9FD177072F100529DE3 /* SVWebViewController.m */,
+			);
+			name = modules;
+			sourceTree = "<group>";
+		};
 		79A6984B1755E71300EC3A98 = {
 			isa = PBXGroup;
 			children = (
@@ -200,6 +225,7 @@
 			isa = PBXGroup;
 			children = (
 				79A6988E17586F0800EC3A98 /* libsqlite3.dylib */,
+				7911FA04177079C500529DE3 /* MessageUI.framework */,
 				79A698FD1761C5DE00EC3A98 /* MapKit.framework */,
 				79A69897175F277B00EC3A98 /* CoreLocation.framework */,
 				79A698571755E71300EC3A98 /* UIKit.framework */,
@@ -212,14 +238,13 @@
 		79A6985D1755E71300EC3A98 /* OldStore */ = {
 			isa = PBXGroup;
 			children = (
+				7911FA0617707A7600529DE3 /* modules */,
 				79A6989B175FBD3300EC3A98 /* image */,
 				79721446176AF96C00BD15A4 /* Common.h */,
 				79A698661755E71300EC3A98 /* OldStoreAppDelegate.h */,
 				79A698671755E71300EC3A98 /* OldStoreAppDelegate.m */,
 				79A698921758BE2C00EC3A98 /* DatabaseManager.h */,
 				79A698931758BE2C00EC3A98 /* DatabaseManager.m */,
-				7989989B1765935B003EEE46 /* StoreAnnotation.h */,
-				7989989C1765935B003EEE46 /* StoreAnnotation.m */,
 				79A6986F1755E71300EC3A98 /* MainStoryboard.storyboard */,
 				79A698721755E71300EC3A98 /* MapViewController.h */,
 				79A698731755E71300EC3A98 /* MapViewController.m */,
@@ -235,6 +260,9 @@
 				79721442176A35B700BD15A4 /* StoreViewController.m */,
 				79721443176A35B700BD15A4 /* StoreViewController.xib */,
 				79A6985E1755E71300EC3A98 /* Supporting Files */,
+				7911FA0D177417CB00529DE3 /* WebViewController.h */,
+				7911FA0E177417CB00529DE3 /* WebViewController.m */,
+				7911FA0F177417CB00529DE3 /* WebViewController.xib */,
 			);
 			path = OldStore;
 			sourceTree = "<group>";
@@ -416,6 +444,7 @@
 				79A698761755E71300EC3A98 /* first.png in Resources */,
 				79A698781755E71300EC3A98 /* first@2x.png in Resources */,
 				79A698911758BBDA00EC3A98 /* OldStore.sql in Resources */,
+				7911FA11177417CB00529DE3 /* WebViewController.xib in Resources */,
 				79A698CF175FBD3400EC3A98 /* navbar.jpg in Resources */,
 				79A698D0175FBD3400EC3A98 /* navbar@2x.jpg in Resources */,
 				79A698D1175FBD3400EC3A98 /* Paper_texture_v5_by_bashcorpo.jpeg in Resources */,
@@ -428,6 +457,7 @@
 				79A698D8175FBD3400EC3A98 /* 22-location-arrow.png in Resources */,
 				79A698D9175FBD3400EC3A98 /* 22-location-arrow@2x.png in Resources */,
 				79A698DA175FBD3400EC3A98 /* 55-network.png in Resources */,
+				7911FA03177078DE00529DE3 /* SVWebViewController.bundle in Resources */,
 				79A698DB175FBD3400EC3A98 /* 55-network@2x.png in Resources */,
 				79A698DC175FBD3400EC3A98 /* favorite.png in Resources */,
 				79A698DD175FBD3400EC3A98 /* 02-star.png in Resources */,
@@ -476,10 +506,12 @@
 				79A698741755E71300EC3A98 /* MapViewController.m in Sources */,
 				79A698871755E79500EC3A98 /* FeatureViewController.m in Sources */,
 				79A6988A1757253A00EC3A98 /* FeatureContentViewController.m in Sources */,
+				7911FA011770731900529DE3 /* SVModalWebViewController.m in Sources */,
 				79721444176A35B700BD15A4 /* StoreViewController.m in Sources */,
+				7911FA10177417CB00529DE3 /* WebViewController.m in Sources */,
+				7911F9FE177072F100529DE3 /* SVWebViewController.m in Sources */,
 				79A6988D1757420500EC3A98 /* StoreListViewController.m in Sources */,
 				79A698941758BE2D00EC3A98 /* DatabaseManager.m in Sources */,
-				7989989D1765935B003EEE46 /* StoreAnnotation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

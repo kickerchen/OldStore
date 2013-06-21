@@ -21,7 +21,6 @@
 @implementation StoreAnnotation 
 
 @synthesize coordinate, title, subtitle;
-
 - (id)initWithLocation: (CLLocationCoordinate2D)coord
 {
     self = [super init];
