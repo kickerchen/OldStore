@@ -15,8 +15,6 @@
 @property (strong, nonatomic) CLLocationManager *locationManager;
 
 - (id)initWithFileName: (NSString *)fileName ofType: (NSString *)typeName;
-//- (void)openDB;  //private method
-//- (void)closeDB;  //private method
 - (NSArray *)getCity;
 - (NSArray *)getRegionByCityId: (NSInteger)cityId;
 - (NSArray *)getShopByGeotag: (NSInteger)geoTagId;

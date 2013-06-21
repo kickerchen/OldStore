@@ -8,9 +8,31 @@
 
 #import "MapViewController.h"
 #import "StoreViewController.h"
-#import "StoreAnnotation.h"
 #import "DatabaseManager.h"
 #import "Common.h"
+
+@interface StoreAnnotation : NSObject <MKAnnotation>
+@property (nonatomic) CLLocationCoordinate2D coordinate;
+@property NSInteger storeID;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *subtitle;
+@end
+
+@implementation StoreAnnotation 
+
+@synthesize coordinate, title, subtitle;
+
+- (id)initWithLocation: (CLLocationCoordinate2D)coord
+{
+    self = [super init];
+    if (self) {
+        coordinate = coord;
+    }
+    
+    return self;
+}
+
+@end
 
 @interface MapViewController ()
 
@@ -121,12 +143,13 @@
             [ rightButton addTarget: self
                              action: @selector( showStore: )
                    forControlEvents: UIControlEventTouchUpInside ];
-            rightButton.tag = ((StoreAnnotation *)annotation).storeID;
-            storePinView.rightCalloutAccessoryView = rightButton;
-            
+            storePinView.rightCalloutAccessoryView = rightButton;            
         } else {
             storePinView.annotation = annotation;
         }
+        
+        // Keep store id in tag of the button.
+        storePinView.rightCalloutAccessoryView.tag = ((StoreAnnotation *)annotation).storeID;
         
         return storePinView;
     }

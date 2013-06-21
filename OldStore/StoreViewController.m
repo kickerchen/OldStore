@@ -6,14 +6,19 @@
 //  Copyright (c) 2013年 KICKERCHEN. All rights reserved.
 //
 
+#import "OldStoreAppDelegate.h"
 #import "StoreViewController.h"
 #import "DatabaseManager.h"
+#import "MapViewController.h"
+#import "WebViewController.h"
+#import "SVWebViewController.h"
 #import "Common.h"
 
 // tableView cell id constants
 static NSString *kNameKey = @"name";
 static NSString *kSinceKey = @"since";
 static NSString *kAboutYearKey = @"is_about_year";
+static NSString *kThumbnailKey = @"thumbnail";
 static NSString *kAddressKey = @"address";
 static NSString *kTelKey = @"tel";
 static NSString *kFaxKey = @"fax";
@@ -27,9 +32,22 @@ static NSString *kProductKey = @"product";
 static NSString *kMediaKey = @"media";
 static NSString *kIntroKey = @"intro";
 
+static NSString *kMediaSectionNameKey = @"name";
+static NSString *kMediaSectionTitleKey = @"title";
+static NSString *kMediaSectionURLKey = @"url";
+
 static NSString *kInfoCellID = @"InfoCellID";
 static NSString *kMediaCellID = @"MediaCellID";
 static NSString *kIntroCellID = @"IntroCellID";
+
+static float kDefaultCellHeight = 34.0;
+static float kThumbnailWidth = 80.0;
+
+typedef enum {
+    SectionTypeInfo = 1,
+    SectionTypeMedia = 2,
+    SectionTypeIntro = 3
+} SectionType;
 
 @interface MyLabel : UILabel
 
@@ -46,8 +64,12 @@ static NSString *kIntroCellID = @"IntroCellID";
 @end
 
 @interface StoreViewController ()
-@property (nonatomic, strong) NSDictionary *storeDetails;
-@property (nonatomic, strong) NSMutableArray *dataSourceArray;
+@property (nonatomic, strong) NSDictionary *storeDetails; // store information returned by SQL
+@property (nonatomic, strong) NSMutableArray *dataSourceArray; // used for view construction
+@property (nonatomic, strong) NSMutableArray *sectionStack; // used for section type identification
+@property (nonatomic, strong) NSMutableArray *infoKeyStack; // used for keeping track each cell's key on info section
+@property (nonatomic, strong) OldStoreAppDelegate *appDelegate;
+@property UITableView *tableView;
 @end
 
 @implementation StoreViewController
@@ -58,6 +80,9 @@ static NSString *kIntroCellID = @"IntroCellID";
 {
     [super viewDidLoad];
 
+    // Get app delegate to access global array for download image
+    self.appDelegate = (OldStoreAppDelegate *)[ [UIApplication sharedApplication] delegate ];
+    
     // Set background image of view.
     UIImage *bg = [UIImage imageNamed:@"Paper_texture_v5_by_bashcorpo.jpeg"];
     if ( IS_IOS_7 ) 
@@ -72,7 +97,19 @@ static NSString *kIntroCellID = @"IntroCellID";
 
     // Data source section 1 (basic info)- section 1 is a NSDictionary: title, image, address, phone, fax, email, biz_hr, close_day, website, official_blog, fb, product
     self.dataSourceArray = [ NSMutableArray array ];
-    NSMutableDictionary *section1 = [[NSMutableDictionary alloc] init];    
+    self.infoKeyStack = [ NSMutableArray array ];
+    NSMutableDictionary *section1 = [[NSMutableDictionary alloc] init];
+    
+    // Check if there's any snapshot about the store.
+    query = [ NSString stringWithFormat: @"SELECT id, store_id, strftime(%@,created_at) AS created_at, asset_file_name FROM assets WHERE store_id = %d", @"'%Y-%m-%d-%H-%M-%S'", self.storeId ];
+    NSArray *urls = [ self.databaseManager sendSQL: query ];
+    if ( [ urls count ] > 0 ) {
+        // Set to data source to create relevant view for putting thumbnails later.
+        NSArray *thumbnailURLs = [ self genThumbnailURLs: urls ];
+        [ section1 setObject: thumbnailURLs forKey: kThumbnailKey ];
+        [ self.infoKeyStack addObject: kThumbnailKey ];
+    }
+    
     [ self setSectionStringData: section1 withKey: kAddressKey ];
     [ self setSectionStringData: section1 withKey: kTelKey ];
     [ self setSectionStringData: section1 withKey: kFaxKey ];
@@ -84,14 +121,18 @@ static NSString *kIntroCellID = @"IntroCellID";
     [ self setSectionStringData: section1 withKey: kFBKey ];
     [ self setSectionStringData: section1 withKey: kProductKey ];
     
-    [ self.dataSourceArray addObject: section1 ];
+    [ self.dataSourceArray addObject: section1 ]; // for view construction
+    
+    self.sectionStack = [NSMutableArray array];
+    [ self.sectionStack addObject: [ NSNumber numberWithInt: SectionTypeInfo ] ]; // for section type identification
     
     // Data source section 2 (media section) - section 2 is a NSArray
     NSString *mediaRawData = [ self.storeDetails valueForKey: kMediaKey ];
     if ( ![ mediaRawData isEqualToString: @"" ] ) {
         NSError *jsonError = nil;
         NSArray *section2 = [ NSJSONSerialization JSONObjectWithData: [mediaRawData dataUsingEncoding: NSUTF8StringEncoding] options: NSJSONReadingMutableContainers error: &jsonError ];
-        [ self.dataSourceArray addObject: section2 ];
+        [ self.dataSourceArray addObject: section2 ]; // for view construction
+        [ self.sectionStack addObject: [ NSNumber numberWithInt: SectionTypeMedia ] ]; // for section type identification
     }
     /*
      -    NSString *introData = [ self.storeDetails valueForKey: @"intro" ];
@@ -115,9 +156,8 @@ static NSString *kIntroCellID = @"IntroCellID";
     // Data source section 3 (intro section) - section 3 is a NSDictionary
     NSString *intro = [ self.storeDetails valueForKey: kIntroKey ];
     if ( ![ intro isEqualToString: @"" ] ) {
-        NSMutableDictionary *section3 = [ [NSMutableDictionary alloc] init ];
-        [ section3 setObject: intro forKey: kIntroKey ];
-        [ self.dataSourceArray addObject: section3 ];
+        [ self.dataSourceArray addObject: intro ]; // for view construction
+        [ self.sectionStack addObject: [ NSNumber numberWithInt: SectionTypeIntro ] ]; // for section type identification
     }
     
     /////////////////////////////////////////////
@@ -130,33 +170,39 @@ static NSString *kIntroCellID = @"IntroCellID";
     nameLabel.backgroundColor = [ UIColor clearColor ];
     nameLabel.font = [ UIFont systemFontOfSize: 20.0 ];
     nameLabel.textColor = [ UIColor redColor ];
+    //nameLabel.userInteractionEnabled = YES;
+    //UIPanGestureRecognizer *gesture = [ [UIPanGestureRecognizer alloc] initWithTarget: self action: @selector( labelDragged: ) ];
+    //[ nameLabel addGestureRecognizer: gesture ];
     [ self.view addSubview: nameLabel ];
     
-    // Create label - Since.
+    // Create label - Since, if exists.
     NSString *sinceYear = [ self getYearString ];
-    MyLabel *sinceLabel = [[MyLabel alloc] initWithFrame: CGRectMake( 270, 15, 41, 30 )];
-    sinceLabel.backgroundColor = [ UIColor clearColor ];
-    sinceLabel.textColor = RGBA( 0, 0.85 );
-    sinceLabel.text = sinceYear;
-    sinceLabel.font = [ UIFont boldSystemFontOfSize: 11.0 ];
-    sinceLabel.numberOfLines = 0;
-    sinceLabel.layer.borderWidth = 1.0;
-    sinceLabel.layer.borderColor = [(UIColor *)RGBA( 0, 0.85 ) CGColor];
-    sinceLabel.layer.cornerRadius = 4.0;
-    sinceLabel.transform = CGAffineTransformMakeRotation( M_PI * 10.0 / 180.0 );
+    if ( ![sinceYear isEqualToString: @""] ) {
+        MyLabel *sinceLabel = [[MyLabel alloc] initWithFrame: CGRectMake( 270, 15, 41, 30 )];
+        sinceLabel.backgroundColor = [ UIColor clearColor ];
+        sinceLabel.textColor = RGBA( 0, 0.85 );
+        sinceLabel.text = sinceYear;
+        sinceLabel.font = [ UIFont boldSystemFontOfSize: 11.0 ];
+        sinceLabel.numberOfLines = 0;
+        sinceLabel.layer.borderWidth = 1.0;
+        sinceLabel.layer.borderColor = [(UIColor *)RGBA( 0, 0.85 ) CGColor];
+        sinceLabel.layer.cornerRadius = 4.0;
+        sinceLabel.transform = CGAffineTransformMakeRotation( M_PI * 10.0 / 180.0 );
     
-    [ self.view addSubview: sinceLabel ];
+        [ self.view addSubview: sinceLabel ];
+    }
     
     // Create table view
-    UITableView *tableView = [ [UITableView alloc] initWithFrame: CGRectMake( 0, 50, self.view.bounds.size.width, self.view.bounds.size.height ) style: UITableViewStyleGrouped ];
+    UITableView *tableView = [ [UITableView alloc] initWithFrame: CGRectMake( 0, 50, self.view.bounds.size.width, self.view.bounds.size.height - STATUS_BAR_HEIGHT - NAV_BAR_HEIGHT - TAB_BAR_HEIGHT - 50 ) style: UITableViewStyleGrouped ];
     tableView.delegate = self;
     tableView.dataSource = self;
     tableView.backgroundView.alpha = 0.0;
     tableView.backgroundColor = [ UIColor clearColor ];
+    tableView.scrollEnabled = YES;
     [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kInfoCellID];
-    [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kMediaCellID];
-    [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kIntroCellID];
-    
+    [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kMediaCellID ];
+    [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kIntroCellID ];
+    self.tableView = tableView;
     [ self.view addSubview: tableView ];
     
     // Create button - google search
@@ -164,11 +210,27 @@ static NSString *kIntroCellID = @"IntroCellID";
     // Create button - report error
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [ super viewDidAppear: animated ];
+    [ self.tableView reloadData ];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark -
+#pragma mark Auxiliary methods
+
 - (void)setSectionStringData: (NSMutableDictionary *)section withKey: (NSString *)key
 {
     NSString *data = [ self.storeDetails valueForKey: key ];
     if ( ![data isEqualToString: @""] ) {
         [ section setObject: data forKey: key ];
+        [ self.infoKeyStack addObject: key ];
     }
 }
 
@@ -189,11 +251,150 @@ static NSString *kIntroCellID = @"IntroCellID";
     return [ NSString stringWithFormat: @"Since %ds", yr ];
 }
 
-- (void)didReceiveMemoryWarning
+- (NSArray *)genThumbnailURLs: (NSArray *)assets
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    NSMutableArray *thumbnails = [ NSMutableArray array ];
+    int count = [ assets count ];
+    for ( int i = 0; i < count ; ++i ) {
+        NSDictionary *asset = [ assets objectAtIndex: i ];
+        NSArray *fileName = [ [ asset objectForKey: @"asset_file_name" ] componentsSeparatedByString: @"." ];
+        NSString *url = [ NSString stringWithFormat: @"https://s3-ap-northeast-1.amazonaws.com/oldstore/%@/small/%@-%@.%@",
+                         [ asset objectForKey: @"id" ],
+                         [ asset objectForKey: @"store_id" ],
+                         [ asset objectForKey: @"created_at" ],
+                         [ fileName objectAtIndex: fileName.count - 1 ] ];
+        [ thumbnails addObject: url ];
+    }
+    return thumbnails;
 }
+- (void)processImageDataWithURLString: (NSString *)urlString andBlock: (void(^)(NSData *imageData))processImage
+{
+    NSURL *url = [ NSURL URLWithString: urlString ];
+    
+    //dispatch_queue_t callerQueue = dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 );
+    dispatch_queue_t callerQueue = dispatch_queue_create( "upadte cell", NULL );
+    //dispatch_queue_t downloadQueue = dispatch_queue_create( "download thumbnail", NULL );
+    dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ),
+    ^{
+        NSData *imageData = [ NSData dataWithContentsOfURL: url ];
+        
+        dispatch_async( callerQueue, ^{processImage( imageData );} );
+    });
+}
+
+- (UITableViewCell *)parseInfoSectionForCell: (UITableView *)tableView with: (UITableViewCell *)cell atIndexPath: (NSIndexPath *)indexPath
+{    
+    [ cell setSelectionStyle: UITableViewCellSelectionStyleNone ];
+    
+    NSString *key = [ self.infoKeyStack objectAtIndex: indexPath.row ]; // get the of this cell
+
+    // thumbnails: create a scroll view and put image view in it
+    if ( [ key isEqualToString: kThumbnailKey ] ) { 
+        
+        NSArray *urls = [ [ self.dataSourceArray objectAtIndex: indexPath.row ] valueForKey: kThumbnailKey ];
+        int count = [ urls count ];
+        UIScrollView *scrollView = [ [ UIScrollView alloc ] initWithFrame: CGRectMake( 0, 0, cell.contentView.frame.size.width-2, kThumbnailWidth + 20 ) ];
+        [ scrollView setContentSize: CGSizeMake( 10 + 90 * count, kThumbnailWidth + 20 ) ];
+        for ( int i = 0; i < count; ++i ) {
+            UIImageView *thumbnail = [ [UIImageView alloc] initWithFrame: CGRectMake( 10+(10+kThumbnailWidth)*i, 10, kThumbnailWidth, kThumbnailWidth ) ];
+            [ thumbnail.layer setBorderWidth: 2.0 ];
+            [ thumbnail.layer setBorderColor: [ RGBA(0xD3D3D3, 1.0) CGColor ] ];
+            [ thumbnail.layer setCornerRadius: 10.0 ];
+            [ thumbnail setContentMode: UIViewContentModeScaleAspectFill ];
+            [ thumbnail setClipsToBounds: YES ];
+            
+            NSString *url = [ urls objectAtIndex: i ];
+            UIImage *image = [self.appDelegate.images valueForKey: url];
+            if ( image ) {
+                [ thumbnail setImage: image ];
+            } else {
+                [ self processImageDataWithURLString: url andBlock: ^(NSData *imageData) {
+                    if ( imageData ) {
+                        UIImage *image = [ [UIImage alloc] initWithData: imageData ];
+                        [ self.appDelegate.images setObject: image forKey: url ]; // keep in global image array
+                        [ thumbnail setImage: image ];
+                        [ self.tableView reloadData ];
+                    }
+                }];
+            }
+
+            [ scrollView addSubview: thumbnail ];
+        }
+        [ cell.contentView addSubview: scrollView ];
+    } else {
+        // create image view to show relevant icon
+        UIImageView *imageView = [[UIImageView alloc] initWithFrame: CGRectMake( 10, 9, 15, 15)];
+        [ imageView setContentMode: UIViewContentModeScaleAspectFill ];
+        //[ imageView setClipsToBounds: YES ];
+        UIImage *image = nil;
+        if ( kAddressKey == key ) {
+            image = [ UIImage imageNamed: @"06-map-pin" ];
+            [ imageView setContentMode: UIViewContentModeCenter ];
+            [ cell setSelectionStyle: UITableViewCellSelectionStyleBlue ];
+            [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        } else if ( kTelKey == key ) {
+            image = [ UIImage imageNamed: @"75-phone" ];
+            [ cell setSelectionStyle: UITableViewCellSelectionStyleBlue ];
+            [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        } else if ( kFaxKey == key ) {
+            image = [ UIImage imageNamed: @"185-printer" ];
+        } else if ( kEmailKey == key ) {
+            image = [ UIImage imageNamed: @"email" ];
+            [ cell setSelectionStyle: UITableViewCellSelectionStyleBlue ];
+            [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        } else if ( kBizHourKey == key ) {
+            image = [ UIImage imageNamed: @"19-clock" ];
+        } else if ( kWebKey == key ) {
+            image = [ UIImage imageNamed: @"38-house" ];
+            [ cell setSelectionStyle: UITableViewCellSelectionStyleBlue ];
+            [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        } else if ( kBlogKey == key ) {
+            image = [ UIImage imageNamed: @"blogger" ];
+            [ cell setSelectionStyle: UITableViewCellSelectionStyleBlue ];
+            [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        } else if ( kFBKey == key ) {
+            image = [ UIImage imageNamed: @"208-facebook" ];
+            [ cell setSelectionStyle: UITableViewCellSelectionStyleBlue ];
+            [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        } else if ( kProductKey == key ) {
+            image = [ UIImage imageNamed: @"02-star" ];
+        }
+        
+        [ imageView setImage: image ];
+        [ cell.contentView addSubview: imageView ];
+        
+        // create a label with content of info
+        NSString *info = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] valueForKey: key ];
+        UILabel *infoLabel = [[UILabel alloc] initWithFrame: CGRectMake( 34, 0, cell.contentView.frame.size.width - 70,         cell.contentView.frame.size.height )];
+        
+        //infoLabel.textColor = RGBA( 0x8B0000, 1.0 );
+        infoLabel.font = [UIFont systemFontOfSize: 14.0];
+        infoLabel.backgroundColor = [ UIColor clearColor ];
+        infoLabel.numberOfLines = 0;
+        infoLabel.text = info;
+        [ cell.contentView addSubview: infoLabel ];
+    }
+    
+    return cell;
+}
+
+#pragma mark -
+#pragma mark Selector methods
+
+- (void)labelDragged:(UIPanGestureRecognizer *)gesture
+{
+    UILabel *label = (UILabel *)gesture.view;
+    CGPoint transition = [ gesture translationInView: label ];
+    
+    // move label
+    label.center = CGPointMake( label.center.x, label.center.y + transition.y );
+    
+    // reset transition
+    [ gesture setTranslation: CGPointZero inView: label ];
+}
+
+#pragma mark -
+#pragma mark UITableViewDelegate methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -203,29 +404,154 @@ static NSString *kIntroCellID = @"IntroCellID";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSInteger cellNumber = [ [self.dataSourceArray objectAtIndex: section] count ];
-    return cellNumber;
+    NSNumber *sectionType = (NSNumber *)[self.sectionStack objectAtIndex: section];
+    switch ( [ sectionType intValue ] ) {
+        case SectionTypeInfo:
+            return [ [self.dataSourceArray objectAtIndex: section] count ];
+            break;
+            
+        case SectionTypeMedia:
+            return [ [self.dataSourceArray objectAtIndex: section] count ];
+            break;
+            
+        case SectionTypeIntro:
+            return 1;
+            break;
+            
+        default:
+            return 0;
+            break;
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if ( 0 == section )
-        return nil;
+    NSNumber *sectionType = (NSNumber *)[self.sectionStack objectAtIndex: section];    
+    switch ( [ sectionType intValue ] ) {
+        case SectionTypeMedia:
+            return NSLocalizedString( @"Media Report", nil );
+            break;
+            
+        case SectionTypeIntro:
+            return NSLocalizedString( @"Introduction", nil );
+            break;
+            
+        default:
+            return nil;
+            break;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat height = kDefaultCellHeight;
+    //UITableViewCell *cell = [tableView cellForRowAtIndexPath: indexPath];
     
-    id data = [ self.dataSourceArray objectAtIndex: section ];
-    if ( [data isKindOfClass: [NSArray class]] )  // media section
-        return NSLocalizedString( @"Media Report", nil );
+    //CGSize textSize = [ cell.textLabel.text sizeWithFont: cell.textLabel.font constrainedToSize: CGSizeMake( 280.0f, MAXFLOAT ) ];
+    //height = textSize.height + 20.0;
     
-    return NSLocalizedString( @"Introduction", nil );
+    int sectionType = [(NSNumber *)[self.sectionStack objectAtIndex: indexPath.section] intValue];
+    if ( SectionTypeInfo == sectionType ) { // Info section
+        NSString *key = [ self.infoKeyStack objectAtIndex: indexPath.row ];
+        if ( [ key isEqualToString: kThumbnailKey ] ) {
+            height = kThumbnailWidth + 20;
+        } else {
+            NSDictionary *info = [ self.dataSourceArray objectAtIndex: indexPath.section ];
+            NSString *text = [ info valueForKey: key ];
+            CGSize textSize = [ text sizeWithFont: [UIFont systemFontOfSize: 14.0] constrainedToSize: CGSizeMake( 280.0f, MAXFLOAT ) ];
+            height = textSize.height + 20.0;
+        }
+        
+    } else if ( SectionTypeMedia == sectionType ) { // Media section
+        NSDictionary *media = [ self.dataSourceArray objectAtIndex: indexPath.section ];
+        NSString *name = [ [ media valueForKey: kMediaSectionNameKey ] objectAtIndex: 0 ];
+        NSString *title = [ [ media valueForKey: kMediaSectionTitleKey ] objectAtIndex: 0 ];
+        NSString *mediaText = [ NSString stringWithFormat: @"%@: %@", name, title ];
+        CGSize textSize = [ mediaText sizeWithFont: [UIFont systemFontOfSize: 14.0] constrainedToSize: CGSizeMake( 280.0f, MAXFLOAT ) ];
+        height = textSize.height + 20.0;
+
+    } else if ( SectionTypeIntro == sectionType ) { // Intro section
+        NSString *text = [ self.dataSourceArray objectAtIndex: indexPath.section ];
+        CGSize textSize = [ text sizeWithFont: [UIFont systemFontOfSize: 14.0] constrainedToSize: CGSizeMake( 280.0f, MAXFLOAT ) ];
+        height = textSize.height + 20.0;
+    }
+    
+    return height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    int sectionType = [(NSNumber *)[self.sectionStack objectAtIndex: indexPath.section] intValue];
     UITableViewCell *cell = nil;
-    cell = [tableView dequeueReusableCellWithIdentifier:kInfoCellID forIndexPath:indexPath];
+    
+    // content-related setting
+    id sectionData = [ self.dataSourceArray objectAtIndex: indexPath.section ];
+    if ( SectionTypeInfo == sectionType ) { // Handle info section
+        cell = [tableView dequeueReusableCellWithIdentifier:kInfoCellID forIndexPath:indexPath];
+        if ( cell.contentView.tag == sectionType )
+            return cell; // This cell has been handled so tag is set as section type. Just return to improve performance.
+        
+        cell = [ self parseInfoSectionForCell: tableView with: cell atIndexPath: indexPath ];
+        [ cell.contentView setTag: SectionTypeInfo ]; 
+        
+    } else if ( SectionTypeMedia == sectionType ) { // Handle media section
+        cell = [tableView dequeueReusableCellWithIdentifier:kMediaCellID forIndexPath:indexPath];
+        if ( cell.contentView.tag == sectionType ) 
+            return cell; // This cell has been handled so tag is set as section type. Just return to improve performance.
+        
+        NSDictionary *media = [ (NSArray *)sectionData objectAtIndex: indexPath.row ];
+        // name, title, url
+        NSString *mediaText = [ NSString stringWithFormat: @"%@: %@",
+                                [ media valueForKey: kMediaSectionNameKey ],
+                                [ media valueForKey: kMediaSectionTitleKey ] ];
+        [ cell.textLabel setText: mediaText];
+        [ cell setAccessoryType: UITableViewCellAccessoryDisclosureIndicator ];
+        [ cell.contentView setTag: SectionTypeMedia ];
+        
+    } else if ( SectionTypeIntro == sectionType ) { // Handle intro section
+        cell = [tableView dequeueReusableCellWithIdentifier:kIntroCellID forIndexPath:indexPath];
+        if ( cell.contentView.tag == sectionType )
+            return cell; // This cell has been handled so tag is set as section type. Just return to improve performance.
+
+        [ cell setSelectionStyle: UITableViewCellSelectionStyleNone ];
+        [ cell.textLabel setText: (NSString *)sectionData ];
+        [ cell.contentView setTag: SectionTypeIntro ];
+    }
+    
     [ cell setBackgroundColor: RGBA( 0xfdf7ea, 0.3 ) ];
+    [ cell.textLabel setFont: [ UIFont systemFontOfSize: 14.0 ] ];
+    [ cell.textLabel setNumberOfLines: 0 ];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [ [ tableView cellForRowAtIndexPath: indexPath ] setSelected: NO ]; // reset the selected cell
+    
+    NSNumber *sectionType = (NSNumber *)[ self.sectionStack objectAtIndex: indexPath.section ];
+    if ( SectionTypeInfo == [sectionType intValue] ) {
+        NSString *key = [ self.infoKeyStack objectAtIndex: indexPath.row ];
+        if ( [key isEqualToString: kAddressKey] ) {
+            MapViewController *map = [
+        } else if ( [key isEqualToString: kTelKey] ) {
+            
+        } else if ( [key isEqualToString: kWebKey] || [key isEqualToString: kBlogKey] || [key isEqualToString: kFBKey] ) {
+            WebViewController *browser = [ [WebViewController alloc] initWithNibName: @"WebViewController" bundle: nil ];
+            browser.urlString = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] valueForKey: key ];
+            
+            // Use the following marked code to implement a full-screen browser instead of opening url explicitly.
+            //UITabBarController *tabBar = (UITabBarController *)[[ [ UIApplication sharedApplication ] keyWindow ] rootViewController ];
+            //[ [ tabBar view ] addSubview: browser.view ];
+
+            [ [ UIApplication sharedApplication ] openURL: [ NSURL URLWithString: browser.urlString ] ];
+        }
+    } else if ( SectionTypeMedia == [sectionType intValue] ) {
+        NSDictionary *media = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] objectAtIndex: indexPath.row ];
+        NSString *url = [ media valueForKey: kMediaSectionURLKey ];
+        SVWebViewController *browser = [ [SVWebViewController alloc] initWithAddress: url ];
+        [ self.navigationController pushViewController: browser animated: YES ];
+    }
 }
 
 @end

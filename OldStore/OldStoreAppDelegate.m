@@ -21,10 +21,13 @@
 
 @implementation OldStoreAppDelegate
 
-@synthesize mapViewController, featureViewController, databaseManager;
+@synthesize mapViewController, featureViewController, databaseManager, images;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // Initialize image array for any download image
+    self.images = [ [NSMutableDictionary alloc] init ];
+    
     // Splash animation effect.
     UIImageView *splash;
     
@@ -37,7 +40,7 @@
     } else {
         splash = [ [UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 480) ];
         splash.image = [UIImage imageNamed:@"Default.png"];
-    }
+    }    
     
     [ self.window.rootViewController.view addSubview: splash ];
     [ self.window.rootViewController.view bringSubviewToFront: splash ];
@@ -49,7 +52,7 @@
     splash.alpha = 0.0;
     [ UIView commitAnimations ];
     
-    // Show initially hidden status bar. 
+    // Show initially hidden status bar.
     [ [ UIApplication sharedApplication ] setStatusBarHidden: NO withAnimation: UIStatusBarAnimationFade ];
     [ [ UIApplication sharedApplication ] setStatusBarStyle: UIStatusBarStyleBlackTranslucent animated: YES ];
     
@@ -57,12 +60,13 @@
     self.databaseManager = [[DatabaseManager alloc] initWithFileName:@"OldStore" ofType:@"sql"];
     
     // Get root view controller.
-    UINavigationController *navController = (UINavigationController *) self.window.rootViewController;
+    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+    tabBarController.delegate = self;
 
     /////////////////////////////////////////
     // Setup map view controller.
     //
-    UINavigationController *mapNavController = [ navController.viewControllers objectAtIndex: 0 ];
+    UINavigationController *mapNavController = [ tabBarController.viewControllers objectAtIndex: 0 ];
     self.mapViewController = [ mapNavController.viewControllers objectAtIndex: 0 ];
     self.mapViewController.databaseManager = self.databaseManager;
     
@@ -83,7 +87,7 @@
     /////////////////////////////////////////
     // Setup feature view controller.
     //
-    UINavigationController *featureNavController = [ navController.viewControllers objectAtIndex: 1 ];
+    UINavigationController *featureNavController = [ tabBarController.viewControllers objectAtIndex: 1 ];
     self.featureViewController = [ featureNavController.viewControllers objectAtIndex: 0 ];
     self.featureViewController.databaseManager = self.databaseManager;
     
@@ -136,6 +140,12 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     
     // For applications that do not support background execution or are linked against iOS 3.x or earlier, this method is always called when the user quits the application. For applications that support background execution, this method is generally not called when the user quits the application because the application simply moves to the background in that case.
+}
+
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
+{
+    // Prevent from turning to the first page if user re-click the same tab.
+    return ( viewController == tabBarController.selectedViewController ) ? NO : YES;
 }
 
 @end

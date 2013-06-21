@@ -10,9 +10,10 @@
 
 @class DatabaseManager;
 
-@interface OldStoreAppDelegate : UIResponder <UIApplicationDelegate>
+@interface OldStoreAppDelegate : UIResponder <UIApplicationDelegate, UITabBarControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) DatabaseManager *databaseManager;
+@property (strong, nonatomic) NSMutableDictionary *images;
 
 @end

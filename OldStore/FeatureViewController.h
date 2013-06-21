@@ -11,7 +11,7 @@
 // Class forwarding.
 @class DatabaseManager;
 
-@interface FeatureViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource>
+@interface FeatureViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, UITabBarControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableViewCell *regionsCell;
 @property (strong, nonatomic) IBOutlet UITableViewCell *categoriesCell;

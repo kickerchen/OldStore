@@ -72,8 +72,9 @@
     
     [self openDB];
     
-    if ( sqlite3_prepare_v2( _database, [ sqlQuery UTF8String ], -1, &statment, NULL ) != SQLITE_OK ) {
-        NSLog( @"[SQLITE][sendSQL Sql query error returned.\n]" );
+    int ret = sqlite3_prepare_v2( _database, [ sqlQuery UTF8String ], -1, &statment, NULL );
+    if ( ret != SQLITE_OK ) {
+        NSLog( @"[SQLITE][sendSQL Sql query error returned: %d.\n]", ret );
     } else {
         results = [ [ NSMutableArray alloc ] init ];
         while ( sqlite3_step( statment ) == SQLITE_ROW ) {
