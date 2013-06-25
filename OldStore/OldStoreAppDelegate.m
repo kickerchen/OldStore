@@ -21,13 +21,10 @@
 
 @implementation OldStoreAppDelegate
 
-@synthesize mapViewController, featureViewController, databaseManager, images;
+@synthesize mapViewController, featureViewController, databaseManager;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    // Initialize image array for any download image
-    self.images = [ [NSMutableDictionary alloc] init ];
-    
+{    
     // Splash animation effect.
     UIImageView *splash;
     

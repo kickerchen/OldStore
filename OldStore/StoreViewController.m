@@ -11,8 +11,10 @@
 #import "OldStoreAppDelegate.h"
 #import "StoreViewController.h"
 #import "DatabaseManager.h"
+#import "FavoriteManager.h"
 #import "WebViewController.h"
 #import "SVWebViewController.h"
+#import "UrlImageView.h"
 #import "Common.h"
 
 // tableView cell id constants
@@ -70,7 +72,8 @@ typedef enum {
 @property (nonatomic, strong) NSMutableArray *sectionStack; // used for section type identification
 @property (nonatomic, strong) NSMutableArray *infoKeyStack; // used for keeping track each cell's key on info section
 @property (nonatomic, strong) OldStoreAppDelegate *appDelegate;
-@property UITableView *tableView;
+@property UIBarButtonItem *addFavButton;
+@property UIBarButtonItem *removeFavButton;
 @end
 
 @implementation StoreViewController
@@ -165,6 +168,13 @@ typedef enum {
     //          Create relevant views          //
     /////////////////////////////////////////////
     
+    // Create button - favorite
+    self.addFavButton = [ [UIBarButtonItem alloc] initWithImage: [UIImage imageNamed: @"03-heart"] style: UIBarButtonItemStyleBordered target: self action: @selector(addFavorite) ];
+    self.removeFavButton = [ [UIBarButtonItem alloc] initWithImage: [UIImage imageNamed: @"03-heart"] style: UIBarButtonItemStyleBordered target: self action: @selector(removeFavorite) ];
+    [ self.removeFavButton setTintColor: [UIColor yellowColor] ];
+    FavoriteManager *favManager = [ [FavoriteManager alloc] init ];
+    self.navigationItem.rightBarButtonItem = ( ![ favManager isFavorite: self.storeId ] ) ? self.addFavButton : self.removeFavButton;
+        
     // Create label - Store name.
     UILabel *nameLabel = [ [ UILabel alloc ] initWithFrame: CGRectMake( 15, 20, 270, 22 ) ];
     nameLabel.text = [ self.storeDetails valueForKey: kNameKey ];
@@ -203,18 +213,11 @@ typedef enum {
     [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kInfoCellID];
     [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kMediaCellID ];
     [ tableView registerClass:[ UITableViewCell class ] forCellReuseIdentifier: kIntroCellID ];
-    self.tableView = tableView;
     [ self.view addSubview: tableView ];
     
     // Create button - google search
     
     // Create button - report error
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [ super viewDidAppear: animated ];
-    [ self.tableView reloadData ];
 }
 
 - (void)didReceiveMemoryWarning
@@ -297,7 +300,7 @@ typedef enum {
         UIScrollView *scrollView = [ [ UIScrollView alloc ] initWithFrame: CGRectMake( 0, 0, cell.contentView.frame.size.width-2, kThumbnailWidth + 20 ) ];
         [ scrollView setContentSize: CGSizeMake( 10 + 90 * count, kThumbnailWidth + 20 ) ];
         for ( int i = 0; i < count; ++i ) {
-            UIImageView *thumbnail = [ [UIImageView alloc] initWithFrame: CGRectMake( 10+(10+kThumbnailWidth)*i, 10, kThumbnailWidth, kThumbnailWidth ) ];
+            UrlImageView *thumbnail = [ [UrlImageView alloc] initWithFrame: CGRectMake( 10+(10+kThumbnailWidth)*i, 10, kThumbnailWidth, kThumbnailWidth ) ];
             [ thumbnail.layer setBorderWidth: 2.0 ];
             [ thumbnail.layer setBorderColor: [ RGBA(0xD3D3D3, 1.0) CGColor ] ];
             [ thumbnail.layer setCornerRadius: 10.0 ];
@@ -305,7 +308,8 @@ typedef enum {
             [ thumbnail setClipsToBounds: YES ];
             
             NSString *url = [ urls objectAtIndex: i ];
-            UIImage *image = [self.appDelegate.images valueForKey: url];
+            [ thumbnail loadImageFromURL: url ];
+            /*UIImage *image = [self.appDelegate.images valueForKey: url];
             if ( image ) {
                 [ thumbnail setImage: image ];
             } else {
@@ -314,10 +318,10 @@ typedef enum {
                         UIImage *image = [ [UIImage alloc] initWithData: imageData ];
                         [ self.appDelegate.images setObject: image forKey: url ]; // keep in global image array
                         [ thumbnail setImage: image ];
-                        [ self.tableView reloadData ];
                     }
                 }];
-            }
+                //UrlImageView *imageView = [ [UrlImageView alloc] initWithFrame:
+            }*/
 
             [ scrollView addSubview: thumbnail ];
         }
@@ -381,6 +385,20 @@ typedef enum {
 
 #pragma mark -
 #pragma mark Selector methods
+
+- (IBAction)addFavorite
+{
+    self.navigationItem.rightBarButtonItem = self.removeFavButton;
+    FavoriteManager *favManager = [ [FavoriteManager alloc] init ];
+    [ favManager addStore: self.storeId ];
+}
+
+- (IBAction)removeFavorite
+{
+    self.navigationItem.rightBarButtonItem = self.addFavButton;
+    FavoriteManager *favManager = [ [FavoriteManager alloc] init ];
+    [ favManager removeStore: self.storeId ];
+}
 
 - (void)labelDragged:(UIPanGestureRecognizer *)gesture
 {

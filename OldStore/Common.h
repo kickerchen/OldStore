@@ -31,3 +31,5 @@
 #define TAB_BAR_HEIGHT 49
 #define NAV_BAR_HEIGHT 44
 #define STATUS_BAR_HEIGHT 20
+
+static NSString *kUserFavorites = @"UserFavorites";

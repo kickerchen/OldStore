@@ -13,6 +13,7 @@
 		7911FA05177079C500529DE3 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7911FA04177079C500529DE3 /* MessageUI.framework */; };
 		7911FA10177417CB00529DE3 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7911FA0E177417CB00529DE3 /* WebViewController.m */; };
 		7911FA11177417CB00529DE3 /* WebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7911FA0F177417CB00529DE3 /* WebViewController.xib */; };
+		7921EDBA1776FE7E002237D9 /* UrlImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7921EDB91776FE7E002237D9 /* UrlImageView.m */; };
 		79721444176A35B700BD15A4 /* StoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79721442176A35B700BD15A4 /* StoreViewController.m */; };
 		79721445176A35B700BD15A4 /* StoreViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79721443176A35B700BD15A4 /* StoreViewController.xib */; };
 		79A698581755E71300EC3A98 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A698571755E71300EC3A98 /* UIKit.framework */; };
@@ -80,6 +81,7 @@
 		79A698FB175FBD3400EC3A98 /* 73-radar.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698CD175FBD3400EC3A98 /* 73-radar.png */; };
 		79A698FC175FBD3400EC3A98 /* 73-radar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 79A698CE175FBD3400EC3A98 /* 73-radar@2x.png */; };
 		79A698FE1761C5DF00EC3A98 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79A698FD1761C5DE00EC3A98 /* MapKit.framework */; };
+		79DF5E021775BFF20010A568 /* FavoriteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 79DF5E011775BFF20010A568 /* FavoriteManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -92,6 +94,8 @@
 		7911FA0D177417CB00529DE3 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		7911FA0E177417CB00529DE3 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 		7911FA0F177417CB00529DE3 /* WebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WebViewController.xib; sourceTree = "<group>"; };
+		7921EDB81776FE7E002237D9 /* UrlImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImageView.h; sourceTree = "<group>"; };
+		7921EDB91776FE7E002237D9 /* UrlImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UrlImageView.m; sourceTree = "<group>"; };
 		79721441176A35B700BD15A4 /* StoreViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoreViewController.h; sourceTree = "<group>"; };
 		79721442176A35B700BD15A4 /* StoreViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoreViewController.m; sourceTree = "<group>"; };
 		79721443176A35B700BD15A4 /* StoreViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = StoreViewController.xib; sourceTree = "<group>"; };
@@ -112,8 +116,8 @@
 		79A698701755E71300EC3A98 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		79A698721755E71300EC3A98 /* MapViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		79A698731755E71300EC3A98 /* MapViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
-		79A698751755E71300EC3A98 /* first.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = first.png; sourceTree = "<group>"; };
-		79A698771755E71300EC3A98 /* first@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first@2x.png"; sourceTree = "<group>"; };
+		79A698751755E71300EC3A98 /* first.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = first.png; path = ../first.png; sourceTree = "<group>"; };
+		79A698771755E71300EC3A98 /* first@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "first@2x.png"; path = "../first@2x.png"; sourceTree = "<group>"; };
 		79A698851755E79500EC3A98 /* FeatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureViewController.h; sourceTree = "<group>"; };
 		79A698861755E79500EC3A98 /* FeatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeatureViewController.m; sourceTree = "<group>"; };
 		79A698881757253A00EC3A98 /* FeatureContentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureContentViewController.h; sourceTree = "<group>"; };
@@ -172,6 +176,8 @@
 		79A698CD175FBD3400EC3A98 /* 73-radar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "73-radar.png"; sourceTree = "<group>"; };
 		79A698CE175FBD3400EC3A98 /* 73-radar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "73-radar@2x.png"; sourceTree = "<group>"; };
 		79A698FD1761C5DE00EC3A98 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		79DF5E001775BFF20010A568 /* FavoriteManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavoriteManager.h; sourceTree = "<group>"; };
+		79DF5E011775BFF20010A568 /* FavoriteManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavoriteManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +208,38 @@
 				7911F9FD177072F100529DE3 /* SVWebViewController.m */,
 			);
 			name = modules;
+			sourceTree = "<group>";
+		};
+		7921EDBB17796E07002237D9 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				79A698851755E79500EC3A98 /* FeatureViewController.h */,
+				79A698861755E79500EC3A98 /* FeatureViewController.m */,
+				79A698881757253A00EC3A98 /* FeatureContentViewController.h */,
+				79A698891757253A00EC3A98 /* FeatureContentViewController.m */,
+				79A698721755E71300EC3A98 /* MapViewController.h */,
+				79A698731755E71300EC3A98 /* MapViewController.m */,
+				79A6988B1757420500EC3A98 /* StoreListViewController.h */,
+				79A6988C1757420500EC3A98 /* StoreListViewController.m */,
+				79721441176A35B700BD15A4 /* StoreViewController.h */,
+				79721442176A35B700BD15A4 /* StoreViewController.m */,
+				7921EDB81776FE7E002237D9 /* UrlImageView.h */,
+				7921EDB91776FE7E002237D9 /* UrlImageView.m */,
+				7911FA0D177417CB00529DE3 /* WebViewController.h */,
+				7911FA0E177417CB00529DE3 /* WebViewController.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		7921EDBC17796E7F002237D9 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				79A6989B175FBD3300EC3A98 /* image */,
+				79A6986F1755E71300EC3A98 /* MainStoryboard.storyboard */,
+				79721443176A35B700BD15A4 /* StoreViewController.xib */,
+				7911FA0F177417CB00529DE3 /* WebViewController.xib */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		79A6984B1755E71300EC3A98 = {
@@ -238,31 +276,17 @@
 		79A6985D1755E71300EC3A98 /* OldStore */ = {
 			isa = PBXGroup;
 			children = (
-				7911FA0617707A7600529DE3 /* modules */,
-				79A6989B175FBD3300EC3A98 /* image */,
 				79721446176AF96C00BD15A4 /* Common.h */,
 				79A698661755E71300EC3A98 /* OldStoreAppDelegate.h */,
 				79A698671755E71300EC3A98 /* OldStoreAppDelegate.m */,
 				79A698921758BE2C00EC3A98 /* DatabaseManager.h */,
 				79A698931758BE2C00EC3A98 /* DatabaseManager.m */,
-				79A6986F1755E71300EC3A98 /* MainStoryboard.storyboard */,
-				79A698721755E71300EC3A98 /* MapViewController.h */,
-				79A698731755E71300EC3A98 /* MapViewController.m */,
-				79A698751755E71300EC3A98 /* first.png */,
-				79A698771755E71300EC3A98 /* first@2x.png */,
-				79A698851755E79500EC3A98 /* FeatureViewController.h */,
-				79A698861755E79500EC3A98 /* FeatureViewController.m */,
-				79A698881757253A00EC3A98 /* FeatureContentViewController.h */,
-				79A698891757253A00EC3A98 /* FeatureContentViewController.m */,
-				79A6988B1757420500EC3A98 /* StoreListViewController.h */,
-				79A6988C1757420500EC3A98 /* StoreListViewController.m */,
-				79721441176A35B700BD15A4 /* StoreViewController.h */,
-				79721442176A35B700BD15A4 /* StoreViewController.m */,
-				79721443176A35B700BD15A4 /* StoreViewController.xib */,
+				79DF5E001775BFF20010A568 /* FavoriteManager.h */,
+				79DF5E011775BFF20010A568 /* FavoriteManager.m */,
+				7921EDBC17796E7F002237D9 /* Resources */,
+				7921EDBB17796E07002237D9 /* Classes */,
+				7911FA0617707A7600529DE3 /* modules */,
 				79A6985E1755E71300EC3A98 /* Supporting Files */,
-				7911FA0D177417CB00529DE3 /* WebViewController.h */,
-				7911FA0E177417CB00529DE3 /* WebViewController.m */,
-				7911FA0F177417CB00529DE3 /* WebViewController.xib */,
 			);
 			path = OldStore;
 			sourceTree = "<group>";
@@ -285,6 +309,8 @@
 		79A6989B175FBD3300EC3A98 /* image */ = {
 			isa = PBXGroup;
 			children = (
+				79A698751755E71300EC3A98 /* first.png */,
+				79A698771755E71300EC3A98 /* first@2x.png */,
 				79A6989C175FBD3400EC3A98 /* bg */,
 				79A698A0175FBD3400EC3A98 /* button */,
 				79A698AB175FBD3400EC3A98 /* guide */,
@@ -506,8 +532,10 @@
 				79A698741755E71300EC3A98 /* MapViewController.m in Sources */,
 				79A698871755E79500EC3A98 /* FeatureViewController.m in Sources */,
 				79A6988A1757253A00EC3A98 /* FeatureContentViewController.m in Sources */,
+				7921EDBA1776FE7E002237D9 /* UrlImageView.m in Sources */,
 				7911FA011770731900529DE3 /* SVModalWebViewController.m in Sources */,
 				79721444176A35B700BD15A4 /* StoreViewController.m in Sources */,
+				79DF5E021775BFF20010A568 /* FavoriteManager.m in Sources */,
 				7911FA10177417CB00529DE3 /* WebViewController.m in Sources */,
 				7911F9FE177072F100529DE3 /* SVWebViewController.m in Sources */,
 				79A6988D1757420500EC3A98 /* StoreListViewController.m in Sources */,
