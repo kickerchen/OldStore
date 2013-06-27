@@ -8,8 +8,11 @@
 
 #import "OldStoreAppDelegate.h"
 #import "DatabaseManager.h"
-#import "MapViewController.h"
+#import "AboutViewController.h"
+#import "FavoriteViewController.h"
 #import "FeatureViewController.h"
+#import "MapViewController.h"
+#import "SearchViewController.h"
 #import "Common.h"
 
 @interface OldStoreAppDelegate()
@@ -22,6 +25,97 @@
 @implementation OldStoreAppDelegate
 
 @synthesize mapViewController, featureViewController, databaseManager;
+
+- (void)setupViewController
+{
+    // Get root view controller.
+    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
+    tabBarController.delegate = self;
+    NSMutableArray *controllerArray = [ NSMutableArray arrayWithArray: tabBarController.viewControllers ];
+    
+    /////////////////////////////////////////
+    // Setup map view controller.
+    //
+    UINavigationController *mapNavController = [ tabBarController.viewControllers objectAtIndex: 0 ];
+    self.mapViewController = [ mapNavController.viewControllers objectAtIndex: 0 ];
+    self.mapViewController.databaseManager = self.databaseManager;
+    
+    // Set nav bar title and background.
+    [ mapNavController.navigationBar setTintColor: [ UIColor redColor ] ];
+    [ mapNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
+    [ mapNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Nearby", nil ) ];
+    
+    // Setup location manager with desired accracy and distance filter.
+    self.mapViewController.locationManager = [ [CLLocationManager alloc] init ];
+    self.mapViewController.locationManager.delegate = mapViewController;
+    self.mapViewController.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    self.mapViewController.locationManager.distanceFilter = kCLLocationAccuracyHundredMeters;
+    self.databaseManager.locationManager = self.mapViewController.locationManager;
+    
+    [ self.mapViewController.locationManager startUpdatingLocation ];
+    
+    /////////////////////////////////////////
+    // Setup feature view controller.
+    //
+    UINavigationController *featureNavController = [ tabBarController.viewControllers objectAtIndex: 1 ];
+    self.featureViewController = [ featureNavController.viewControllers objectAtIndex: 0 ];
+    self.featureViewController.databaseManager = self.databaseManager;
+    
+    // Set nav bar tint color(for back button), title and background.
+    [ featureNavController.navigationBar setTintColor: [ UIColor redColor ] ];
+    [ featureNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
+    [ featureNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Featured", nil ) ];
+    
+    /////////////////////////////////////////
+    // Setup search view controller.
+    //
+    SearchViewController *searchViewController = [ [SearchViewController alloc] initWithNibName: @"SearchViewController" bundle: nil ];
+    UINavigationController *searchNavController = [ [UINavigationController alloc] initWithRootViewController:searchViewController ];
+    [ controllerArray addObject: searchNavController ];
+    
+    // Set nav bar title and background.
+    [ searchNavController.navigationBar setTintColor: [ UIColor redColor ] ];
+    [ searchNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
+    [ searchNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Store Search", nil ) ];
+    
+    // Set tab bar item
+    searchNavController.tabBarItem = [ [UITabBarItem alloc] initWithTitle: NSLocalizedString( @"Search", nil ) image: [ UIImage imageNamed:@"06-magnify" ] tag: 0 ];
+    
+    
+    /////////////////////////////////////////
+    // Setup favorite view controller.
+    //
+    FavoriteViewController *favoriteViewController = [ [FavoriteViewController alloc] initWithNibName: @"FavoriteViewController" bundle: nil ];
+    UINavigationController *favoriteNavController = [ [UINavigationController alloc] initWithRootViewController: favoriteViewController ];
+    [ controllerArray addObject: favoriteNavController ];
+    
+    // Set nav bar title and background.
+    [ favoriteNavController.navigationBar setTintColor: [ UIColor redColor ] ];
+    [ favoriteNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
+    [ favoriteNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Favorites", nil ) ];
+    
+    // Set tab bar item
+    favoriteNavController.tabBarItem = [ [UITabBarItem alloc] initWithTitle: NSLocalizedString( @"Favorites", nil ) image: [ UIImage imageNamed:@"29-heart" ] tag: 0 ];
+    
+    /////////////////////////////////////////
+    // Setup about view controller.
+    //
+    AboutViewController *aboutViewController = [ [AboutViewController alloc] initWithNibName: @"AboutViewController" bundle: nil ];
+    UINavigationController *aboutNavController = [ [UINavigationController alloc] initWithRootViewController: aboutViewController ];
+    [ controllerArray addObject: aboutNavController ];
+    
+    // Set nav bar title and background.
+    [ aboutNavController.navigationBar setTintColor: [ UIColor redColor ] ];
+    [ aboutNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
+    [ aboutNavController.navigationBar.topItem setTitle: NSLocalizedString( @"About Us", nil ) ];
+    
+    // Set tab bar item
+    aboutNavController.tabBarItem = [ [UITabBarItem alloc] initWithTitle: NSLocalizedString( @"About", nil ) image: [ UIImage imageNamed:@"09-chat-2" ] tag: 0 ];
+    
+    
+    // need to reset view controllers.
+    [ tabBarController setViewControllers: controllerArray ];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {    
@@ -56,42 +150,8 @@
     // Initialize SQLite database.
     self.databaseManager = [[DatabaseManager alloc] initWithFileName:@"OldStore" ofType:@"sql"];
     
-    // Get root view controller.
-    UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
-    tabBarController.delegate = self;
-
-    /////////////////////////////////////////
-    // Setup map view controller.
-    //
-    UINavigationController *mapNavController = [ tabBarController.viewControllers objectAtIndex: 0 ];
-    self.mapViewController = [ mapNavController.viewControllers objectAtIndex: 0 ];
-    self.mapViewController.databaseManager = self.databaseManager;
-    
-    // Set nav bar title and background.
-    [ mapNavController.navigationBar setTintColor: [ UIColor redColor ] ];
-    [ mapNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
-    [ mapNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Nearby", nil ) ];
-    
-    // Setup location manager with desired accracy and distance filter.
-    self.mapViewController.locationManager = [ [CLLocationManager alloc] init ];
-    self.mapViewController.locationManager.delegate = mapViewController;
-    self.mapViewController.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-    self.mapViewController.locationManager.distanceFilter = kCLLocationAccuracyHundredMeters;
-    self.databaseManager.locationManager = self.mapViewController.locationManager;
-
-    [ self.mapViewController.locationManager startUpdatingLocation ];
-    
-    /////////////////////////////////////////
-    // Setup feature view controller.
-    //
-    UINavigationController *featureNavController = [ tabBarController.viewControllers objectAtIndex: 1 ];
-    self.featureViewController = [ featureNavController.viewControllers objectAtIndex: 0 ];
-    self.featureViewController.databaseManager = self.databaseManager;
-    
-    // Set nav bar tint color(for back button), title and background.
-    [ featureNavController.navigationBar setTintColor: [ UIColor redColor ] ];
-    [ featureNavController.navigationBar setBackgroundImage: [ UIImage imageNamed: @"navbar.jpg" ] forBarMetrics: UIBarMetricsDefault ];
-    [ featureNavController.navigationBar.topItem setTitle: NSLocalizedString( @"Featured", nil ) ];
+    // Setup view controllers for each tab.
+    [ self setupViewController ];
     
     return YES;
 }

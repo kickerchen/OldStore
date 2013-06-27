@@ -15,6 +15,7 @@
 #import "WebViewController.h"
 #import "SVWebViewController.h"
 #import "UrlImageView.h"
+#import "ScrollableImageViewController.h"
 #import "Common.h"
 
 // tableView cell id constants
@@ -66,7 +67,7 @@ typedef enum {
 
 @end
 
-@interface StoreViewController () <UIAlertViewDelegate, MFMailComposeViewControllerDelegate>
+@interface StoreViewController () <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, MFMailComposeViewControllerDelegate, UIGestureRecognizerDelegate>
 @property (nonatomic, strong) NSDictionary *storeDetails; // store information returned by SQL
 @property (nonatomic, strong) NSMutableArray *dataSourceArray; // used for view construction
 @property (nonatomic, strong) NSMutableArray *sectionStack; // used for section type identification
@@ -83,16 +84,9 @@ typedef enum {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Get app delegate to access global array for download image
-    self.appDelegate = (OldStoreAppDelegate *)[ [UIApplication sharedApplication] delegate ];
     
     // Set background image of view.
-    UIImage *bg = [UIImage imageNamed:@"Paper_texture_v5_by_bashcorpo.jpeg"];
-    if ( IS_IOS_7 ) 
-        [ bg imageWithRenderingMode: UIImageRenderingModeAlwaysOriginal ];
-
-    self.view.backgroundColor = [ UIColor colorWithPatternImage: bg ];
+    self.view.backgroundColor = [ UIColor colorWithPatternImage: [UIImage imageNamed:@"Paper_texture_v5_by_bashcorpo.jpeg"] ];
     
     // SQL query: get shop by shop id
     NSString *query = [ NSString stringWithFormat: @"SELECT * FROM stores WHERE id = %d", self.storeId ];
@@ -109,8 +103,8 @@ typedef enum {
     NSArray *urls = [ self.databaseManager sendSQL: query ];
     if ( [ urls count ] > 0 ) {
         // Set to data source to create relevant view for putting thumbnails later.
-        NSArray *thumbnailURLs = [ self genThumbnailURLs: urls ];
-        [ section1 setObject: thumbnailURLs forKey: kThumbnailKey ];
+        //NSArray *thumbnailURLs = [ self genImageURLs: urls imageSize: @"small" ];
+        [ section1 setObject: urls forKey: kThumbnailKey ];
         [ self.infoKeyStack addObject: kThumbnailKey ];
     }
     
@@ -255,35 +249,22 @@ typedef enum {
     return [ NSString stringWithFormat: @"Since %ds", yr ];
 }
 
-- (NSArray *)genThumbnailURLs: (NSArray *)assets
+- (NSArray *)genImageURLs: (NSArray *)assets imageSize: (NSString *)size
 {
     NSMutableArray *thumbnails = [ NSMutableArray array ];
     int count = [ assets count ];
     for ( int i = 0; i < count ; ++i ) {
         NSDictionary *asset = [ assets objectAtIndex: i ];
         NSArray *fileName = [ [ asset objectForKey: @"asset_file_name" ] componentsSeparatedByString: @"." ];
-        NSString *url = [ NSString stringWithFormat: @"https://s3-ap-northeast-1.amazonaws.com/oldstore/%@/small/%@-%@.%@",
+        NSString *url = [ NSString stringWithFormat: @"https://s3-ap-northeast-1.amazonaws.com/oldstore/%@/%@/%@-%@.%@",
                          [ asset objectForKey: @"id" ],
+                         size,
                          [ asset objectForKey: @"store_id" ],
                          [ asset objectForKey: @"created_at" ],
                          [ fileName objectAtIndex: fileName.count - 1 ] ];
         [ thumbnails addObject: url ];
     }
     return thumbnails;
-}
-- (void)processImageDataWithURLString: (NSString *)urlString andBlock: (void(^)(NSData *imageData))processImage
-{
-    NSURL *url = [ NSURL URLWithString: urlString ];
-    
-    //dispatch_queue_t callerQueue = dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 );
-    dispatch_queue_t callerQueue = dispatch_queue_create( "upadte cell", NULL );
-    //dispatch_queue_t downloadQueue = dispatch_queue_create( "download thumbnail", NULL );
-    dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ),
-    ^{
-        NSData *imageData = [ NSData dataWithContentsOfURL: url ];
-        
-        dispatch_async( callerQueue, ^{processImage( imageData );} );
-    });
 }
 
 - (UITableViewCell *)parseInfoSectionForCell: (UITableView *)tableView with: (UITableViewCell *)cell atIndexPath: (NSIndexPath *)indexPath
@@ -295,8 +276,9 @@ typedef enum {
     // thumbnails: create a scroll view and put image view in it
     if ( [ key isEqualToString: kThumbnailKey ] ) { 
         
-        NSArray *urls = [ [ self.dataSourceArray objectAtIndex: indexPath.row ] valueForKey: kThumbnailKey ];
-        int count = [ urls count ];
+        NSArray *urls = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] valueForKey: kThumbnailKey ];
+        NSArray *thumbnailURLs = [ self genImageURLs: urls imageSize: @"small" ];
+        int count = [ thumbnailURLs count ];
         UIScrollView *scrollView = [ [ UIScrollView alloc ] initWithFrame: CGRectMake( 0, 0, cell.contentView.frame.size.width-2, kThumbnailWidth + 20 ) ];
         [ scrollView setContentSize: CGSizeMake( 10 + 90 * count, kThumbnailWidth + 20 ) ];
         for ( int i = 0; i < count; ++i ) {
@@ -304,27 +286,19 @@ typedef enum {
             [ thumbnail.layer setBorderWidth: 2.0 ];
             [ thumbnail.layer setBorderColor: [ RGBA(0xD3D3D3, 1.0) CGColor ] ];
             [ thumbnail.layer setCornerRadius: 10.0 ];
-            [ thumbnail setContentMode: UIViewContentModeScaleAspectFill ];
             [ thumbnail setClipsToBounds: YES ];
-            
-            NSString *url = [ urls objectAtIndex: i ];
-            [ thumbnail loadImageFromURL: url ];
-            /*UIImage *image = [self.appDelegate.images valueForKey: url];
-            if ( image ) {
-                [ thumbnail setImage: image ];
-            } else {
-                [ self processImageDataWithURLString: url andBlock: ^(NSData *imageData) {
-                    if ( imageData ) {
-                        UIImage *image = [ [UIImage alloc] initWithData: imageData ];
-                        [ self.appDelegate.images setObject: image forKey: url ]; // keep in global image array
-                        [ thumbnail setImage: image ];
-                    }
-                }];
-                //UrlImageView *imageView = [ [UrlImageView alloc] initWithFrame:
-            }*/
+            [ thumbnail loadImageFromURL: [ thumbnailURLs objectAtIndex: i ] ];
 
+            // Add single tap event listener.
+            UITapGestureRecognizer *singleTap = [ [UITapGestureRecognizer alloc] initWithTarget: self action: @selector( singleTapOnThumbnails: ) ];
+            [ singleTap setDelegate: self ];
+            [ thumbnail setTag: i ];
+            [ thumbnail setUserInteractionEnabled: YES ];
+            [ thumbnail addGestureRecognizer: singleTap ];
+            
             [ scrollView addSubview: thumbnail ];
         }
+
         [ cell.contentView addSubview: scrollView ];
     } else {
         // create image view to show relevant icon
@@ -580,21 +554,23 @@ typedef enum {
             } else {
                 MFMailComposeViewController *mailer = [[MFMailComposeViewController alloc] init];
                 mailer.mailComposeDelegate = self;
-                //[ mailer setSubject: @"subject"];
                 [ mailer setToRecipients: @[ [storeInfo valueForKey: kEmailKey] ]];
-                //[ mailer setMessageBody: @"msgBody" isHTML: NO ];
                 [ self presentViewController: mailer animated: YES completion: NULL ];
             }
             
         } else if ( [key isEqualToString: kWebKey] || [key isEqualToString: kBlogKey] || [key isEqualToString: kFBKey] ) {
             
-            WebViewController *browser = [ [WebViewController alloc] initWithNibName: @"WebViewController" bundle: nil ];
-            browser.urlString = [ storeInfo valueForKey: key ];
+            //WebViewController *browser = [ [WebViewController alloc] initWithNibName: @"WebViewController" bundle: nil ];
+            //browser.urlString = [ storeInfo valueForKey: key ];
             
             // Use the following marked code to implement a full-screen browser instead of opening url explicitly.
             //UITabBarController *tabBar = (UITabBarController *)[[ [ UIApplication sharedApplication ] keyWindow ] rootViewController ];
             //[ [ tabBar view ] addSubview: browser.view ];
-            [ [ UIApplication sharedApplication ] openURL: [ NSURL URLWithString: browser.urlString ] ];
+            //[ [ UIApplication sharedApplication ] openURL: [ NSURL URLWithString: browser.urlString ] ];
+            
+            SVWebViewController *browser = [ [SVWebViewController alloc] initWithAddress: [storeInfo valueForKey: key] ];
+            browser.hidesBottomBarWhenPushed = YES;
+            [ self.navigationController pushViewController: browser animated: YES ];
             
         }
         
@@ -603,6 +579,7 @@ typedef enum {
         NSDictionary *media = [ [ self.dataSourceArray objectAtIndex: indexPath.section ] objectAtIndex: indexPath.row ];
         NSString *url = [ media valueForKey: kMediaSectionURLKey ];
         SVWebViewController *browser = [ [SVWebViewController alloc] initWithAddress: url ];
+        browser.hidesBottomBarWhenPushed = YES;
         [ self.navigationController pushViewController: browser animated: YES ];
         
     }
@@ -625,6 +602,19 @@ typedef enum {
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
 {
     [ self dismissViewControllerAnimated: YES completion: NULL ];
+}
+
+#pragma mark -
+#pragma mark UIGestureRecognizerDelegate methods
+
+- (void)singleTapOnThumbnails: (UITapGestureRecognizer *)gestureRecognizer
+{
+    ScrollableImageViewController *gallery = [ [ScrollableImageViewController alloc]initWithNibName: @"ScrollableImageViewController" bundle: nil ];
+    NSArray *urls = [ [ self.dataSourceArray objectAtIndex: 0 ] valueForKey: kThumbnailKey ];
+    gallery.urlList = [ self genImageURLs: urls imageSize: @"medium" ];
+    gallery.currentPage = gestureRecognizer.view.tag;
+    gallery.hidesBottomBarWhenPushed = YES;
+    [ self.navigationController pushViewController: gallery animated: YES ];
 }
 
 @end

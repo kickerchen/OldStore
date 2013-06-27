@@ -10,7 +10,7 @@
 
 @implementation UrlImageView
 
-@synthesize fitFrame;
+@synthesize delegate, contentMode;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -21,6 +21,7 @@
         [ activityIndicator setHidesWhenStopped: YES ];
         [ activityIndicator startAnimating ];
         [ self addSubview: activityIndicator ];
+        contentMode = UIViewContentModeScaleAspectFill;
     }
     return self;
 }
@@ -30,7 +31,7 @@
     if ( connection ) {
         [ connection cancel ];
     }
-    
+    //NSLog(@"url: %@",url);
     NSURLRequest *request = [NSURLRequest requestWithURL: [ NSURL URLWithString: url ] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0 ];
     connection = [ [NSURLConnection alloc] initWithRequest: request delegate: self ];
 }
@@ -53,7 +54,13 @@
     
     UIImageView *imageView = [ [UIImageView alloc] initWithFrame: CGRectMake( 0, 0, self.frame.size.width, self.frame.size.height ) ];
     imageView.image = [ UIImage imageWithData: downloadData ];
-    imageView.contentMode = ( YES == fitFrame ) ? UIViewContentModeScaleAspectFit : UIViewContentModeScaleAspectFill;
+
+    //NSLog(@"UIImage w:%f h:%f\n UIImageView w:%f h:%f", imageView.image.size.width, imageView.image.size.height, self.frame.size.width, self.frame.size.height);
+    if ( imageView.image.size.width < self.frame.size.width && imageView.image.size.height < self.frame.size.height ) {
+        imageView.contentMode = UIViewContentModeCenter;
+    } else {
+        imageView.contentMode = contentMode;
+    }
     
     [ self addSubview: imageView ];
     
@@ -69,6 +76,23 @@
 {
     UIImageView *imageView = [self.subviews objectAtIndex: 0];
     return [ imageView image ];
+}
+
+#pragma mark -
+#pragma mark tap-detecting relevant methods
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [ touches anyObject ];
+    tapLocation = [ touch locationInView: self ];
+    [ self performSelector: @selector(handleSingleTap) withObject: nil afterDelay: 0.35 ];
+}
+
+- (void)handleSingleTap
+{
+    if ( [ delegate respondsToSelector: @selector( urlImageView:singleTapAtPoint:) ] ) {
+        [ delegate urlImageView: self singleTapAtPoint: tapLocation ];
+    }
 }
 
 @end
