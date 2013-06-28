@@ -75,6 +75,7 @@ typedef enum {
 @property (nonatomic, strong) OldStoreAppDelegate *appDelegate;
 @property UIBarButtonItem *addFavButton;
 @property UIBarButtonItem *removeFavButton;
+@property FavoriteManager *favManager;
 @end
 
 @implementation StoreViewController
@@ -103,7 +104,6 @@ typedef enum {
     NSArray *urls = [ self.databaseManager sendSQL: query ];
     if ( [ urls count ] > 0 ) {
         // Set to data source to create relevant view for putting thumbnails later.
-        //NSArray *thumbnailURLs = [ self genImageURLs: urls imageSize: @"small" ];
         [ section1 setObject: urls forKey: kThumbnailKey ];
         [ self.infoKeyStack addObject: kThumbnailKey ];
     }
@@ -132,24 +132,6 @@ typedef enum {
         [ self.dataSourceArray addObject: section2 ]; // for view construction
         [ self.sectionStack addObject: [ NSNumber numberWithInt: SectionTypeMedia ] ]; // for section type identification
     }
-    /*
-     -    NSString *introData = [ self.storeDetails valueForKey: @"intro" ];
-     -    BOOL isNull = [ introData isEqualToString: @"" ];
-     -
-     -    NSString *mediaData = [ self.storeDetails valueForKey: @"media" ];
-     -    BOOL isMediaNull = [ mediaData isEqualToString: @"" ];
-     -    NSError *jsonError = nil;
-     -    id jsonObject = [ NSJSONSerialization JSONObjectWithData: [mediaData dataUsingEncoding:NSUTF8StringEncoding] options: NSJSONReadingMutableContainers error: &jsonError ];
-     -
-     -    NSDictionary *media = (NSDictionary *)[jsonObject objectAtIndex:0];
-     -
-     -
-     -        NSLog( @"name: %@\n", [ media valueForKey: @"name" ] );
-     -        NSLog( @"title: %@\n", [ media valueForKey: @"title" ] );
-     -        NSLog( @"url: %@\n", [ media valueForKey: @"url" ] );
-     -
-     -             //distanceLabel.transform = CGAffineTransformMakeRotation( M_PI * 10.0 / 180.0 );
-     -     */
     
     // Data source section 3 (intro section) - section 3 is a NSDictionary
     NSString *intro = [ self.storeDetails valueForKey: kIntroKey ];
@@ -166,8 +148,7 @@ typedef enum {
     self.addFavButton = [ [UIBarButtonItem alloc] initWithImage: [UIImage imageNamed: @"03-heart"] style: UIBarButtonItemStyleBordered target: self action: @selector(addFavorite) ];
     self.removeFavButton = [ [UIBarButtonItem alloc] initWithImage: [UIImage imageNamed: @"03-heart"] style: UIBarButtonItemStyleBordered target: self action: @selector(removeFavorite) ];
     [ self.removeFavButton setTintColor: [UIColor yellowColor] ];
-    FavoriteManager *favManager = [ [FavoriteManager alloc] init ];
-    self.navigationItem.rightBarButtonItem = ( ![ favManager isFavorite: self.storeId ] ) ? self.addFavButton : self.removeFavButton;
+    self.favManager = [ [FavoriteManager alloc] init ];
         
     // Create label - Store name.
     UILabel *nameLabel = [ [ UILabel alloc ] initWithFrame: CGRectMake( 15, 20, 270, 22 ) ];
@@ -175,9 +156,6 @@ typedef enum {
     nameLabel.backgroundColor = [ UIColor clearColor ];
     nameLabel.font = [ UIFont systemFontOfSize: 20.0 ];
     nameLabel.textColor = [ UIColor redColor ];
-    //nameLabel.userInteractionEnabled = YES;
-    //UIPanGestureRecognizer *gesture = [ [UIPanGestureRecognizer alloc] initWithTarget: self action: @selector( labelDragged: ) ];
-    //[ nameLabel addGestureRecognizer: gesture ];
     [ self.view addSubview: nameLabel ];
     
     // Create label - Since, if exists.
@@ -212,6 +190,11 @@ typedef enum {
     // Create button - google search
     
     // Create button - report error
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.navigationItem.rightBarButtonItem = ( ![ self.favManager isFavorite: self.storeId ] ) ? self.addFavButton : self.removeFavButton;
 }
 
 - (void)didReceiveMemoryWarning

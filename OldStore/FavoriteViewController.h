@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FavoriteViewController : UIViewController
+@class DatabaseManager;
 
+@interface FavoriteViewController : UIViewController
+@property (nonatomic, strong) DatabaseManager *dbMgr;
 @end

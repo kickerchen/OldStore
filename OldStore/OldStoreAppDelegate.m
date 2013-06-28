@@ -86,6 +86,7 @@
     // Setup favorite view controller.
     //
     FavoriteViewController *favoriteViewController = [ [FavoriteViewController alloc] initWithNibName: @"FavoriteViewController" bundle: nil ];
+    favoriteViewController.dbMgr = self.databaseManager;
     UINavigationController *favoriteNavController = [ [UINavigationController alloc] initWithRootViewController: favoriteViewController ];
     [ controllerArray addObject: favoriteNavController ];
     

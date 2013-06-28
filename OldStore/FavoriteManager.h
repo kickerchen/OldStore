@@ -13,5 +13,6 @@
 - (void)addStore: (NSInteger)storeID;
 - (void)removeStore: (NSInteger)storeID;
 - (BOOL)isFavorite: (NSInteger)storeID;
+- (NSArray *)getFavorites;
 
 @end

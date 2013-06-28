@@ -271,4 +271,57 @@
     return shops;
 }
 
+- (NSArray *)getShopByShopIds: (NSArray *)ids
+{
+    [self openDB];
+    NSMutableArray *shops = nil;
+    CLLocation *currentPosition = [ locationManager location ];    
+    int count = [ids count];
+    
+    if ( count > 0 ) {
+        NSString *sqlQuery = nil;
+        if ( currentPosition != nil ) {
+            sqlQuery = [ NSString stringWithFormat:@"SELECT id, name, address, ( 110.54*110.54*(lat-%f)*(lat-%f) + 101.69588*101.69588*(lng-%f)*(lng-%f) ) AS distance FROM stores WHERE id = %@", currentPosition.coordinate.latitude, currentPosition.coordinate.latitude, currentPosition.coordinate.longitude, currentPosition.coordinate.longitude, [ids objectAtIndex:0] ];
+            for (int i = 1; i < count; ++i) {
+                sqlQuery = [ sqlQuery stringByAppendingString:[NSString stringWithFormat:@" OR id = %@", [ids objectAtIndex:i]] ];
+            }
+            sqlQuery = [ sqlQuery stringByAppendingString:@" ORDER BY distance" ];
+        } else {
+            sqlQuery = [ NSString stringWithFormat:@"SELECT id, name, address FROM stores WHERE id = %@", [ids objectAtIndex:0] ];
+            for (int i = 1; i < count; ++i) {
+                [ sqlQuery stringByAppendingString:[NSString stringWithFormat:@" OR id = %@", [ids objectAtIndex:i]] ];
+            }
+        }
+    
+        sqlite3_stmt *statement = nil;
+        int returnValue = sqlite3_prepare_v2( _database, [ sqlQuery UTF8String], -1, &statement, NULL );
+        if ( returnValue != SQLITE_OK ) {
+            NSLog( @"[SQLITE][getShopByShopId] Sql query returned error");
+        } else {
+            shops = [[NSMutableArray alloc] init];
+            while ( sqlite3_step( statement ) == SQLITE_ROW ) {
+                NSMutableDictionary *record = [[NSMutableDictionary alloc] init];
+                NSNumber *shopId = [ NSNumber numberWithInt: sqlite3_column_int( statement, 0 ) ];
+                NSString *shopName = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 1 ) encoding:NSUTF8StringEncoding ];
+                NSString *shopAddress = [ NSString stringWithCString: (char *)sqlite3_column_text( statement, 2 ) encoding:NSUTF8StringEncoding ];
+                [ record setObject: shopId forKey: @"id" ];
+                [ record setObject: shopName forKey: @"name" ];
+                [ record setObject: shopAddress forKey: @"address" ];
+            
+                if ( currentPosition != nil ) {
+                    NSNumber *shopDistance = [ NSNumber numberWithDouble: sqrt(sqlite3_column_double( statement, 3 )) ];
+                    [ record setObject: shopDistance forKey: @"distance" ];
+                }
+            
+                [ shops addObject: record ];
+            }
+        }
+    
+        if ( statement != nil ) sqlite3_finalize( statement );
+    }
+    
+    [self closeDB];
+    return shops;
+}
+
 @end

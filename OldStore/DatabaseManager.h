@@ -19,6 +19,7 @@
 - (NSArray *)getRegionByCityId: (NSInteger)cityId;
 - (NSArray *)getShopByGeotag: (NSInteger)geoTagId;
 - (NSArray *)getShopByCityId: (NSInteger)cityId;
+- (NSArray *)getShopByShopIds: (NSArray *)ids;
 - (NSArray *)sendSQL: (NSString *)sqlQuery;
 
 @end
