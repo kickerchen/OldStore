@@ -102,7 +102,7 @@
     if ( abs(howRecent) < 15.0 ) {
         MKCoordinateRegion userLocation = MKCoordinateRegionMakeWithDistance( location.coordinate, kCLLocationAccuracyKilometer, kCLLocationAccuracyKilometer );
         [ self.mapView setRegion: userLocation animated: YES ];
-        NSLog( @"User location: latitude %+.6f, longitude %+.6f\n", location.coordinate.latitude, location.coordinate.longitude );
+        //NSLog( @"User location: latitude %+.6f, longitude %+.6f\n", location.coordinate.latitude, location.coordinate.longitude );
     }
 }
 

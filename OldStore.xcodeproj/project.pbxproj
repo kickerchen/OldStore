@@ -90,6 +90,7 @@
 		79CBE1C2177C220C00C4BD5A /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 79CBE1C0177C220C00C4BD5A /* AboutViewController.m */; };
 		79CBE1C3177C220C00C4BD5A /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 79CBE1C1177C220C00C4BD5A /* AboutViewController.xib */; };
 		79DF5E021775BFF20010A568 /* FavoriteManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 79DF5E011775BFF20010A568 /* FavoriteManager.m */; };
+		79EE187617815FEF0006918B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 79EE187417815FEF0006918B /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -198,6 +199,9 @@
 		79CBE1C1177C220C00C4BD5A /* AboutViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutViewController.xib; sourceTree = "<group>"; };
 		79DF5E001775BFF20010A568 /* FavoriteManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavoriteManager.h; sourceTree = "<group>"; };
 		79DF5E011775BFF20010A568 /* FavoriteManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavoriteManager.m; sourceTree = "<group>"; };
+		79EE187517815FEF0006918B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		79EE187B1781739E0006918B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		79EE187C1781747D0006918B /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "zh-Hant"; path = "zh-Hant.lproj/MainStoryboard.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -316,6 +320,7 @@
 		79A6985E1755E71300EC3A98 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				79EE187417815FEF0006918B /* Localizable.strings */,
 				79A698901758BBDA00EC3A98 /* OldStore.sql */,
 				79A6985F1755E71300EC3A98 /* OldStore-Info.plist */,
 				79A698601755E71300EC3A98 /* InfoPlist.strings */,
@@ -494,6 +499,8 @@
 			knownRegions = (
 				en,
 				"zh-Hant",
+				"zh-Hant-TW",
+				zh,
 			);
 			mainGroup = 79A6984B1755E71300EC3A98;
 			productRefGroup = 79A698551755E71300EC3A98 /* Products */;
@@ -535,6 +542,7 @@
 				79A698D9175FBD3400EC3A98 /* 22-location-arrow@2x.png in Resources */,
 				79A698DA175FBD3400EC3A98 /* 55-network.png in Resources */,
 				7911FA03177078DE00529DE3 /* SVWebViewController.bundle in Resources */,
+				79EE187617815FEF0006918B /* Localizable.strings in Resources */,
 				79A698DB175FBD3400EC3A98 /* 55-network@2x.png in Resources */,
 				79A698DC175FBD3400EC3A98 /* favorite.png in Resources */,
 				79A698DD175FBD3400EC3A98 /* 02-star.png in Resources */,
@@ -614,8 +622,18 @@
 			isa = PBXVariantGroup;
 			children = (
 				79A698701755E71300EC3A98 /* en */,
+				79EE187C1781747D0006918B /* zh-Hant */,
 			);
 			name = MainStoryboard.storyboard;
+			sourceTree = "<group>";
+		};
+		79EE187417815FEF0006918B /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				79EE187517815FEF0006918B /* en */,
+				79EE187B1781739E0006918B /* zh-Hant */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

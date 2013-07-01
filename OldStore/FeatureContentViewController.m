@@ -143,7 +143,7 @@
             NSArray *regionsInACity = [ [ self.queryData objectAtIndex: indexPath.section ] valueForKey: @"regions" ];
             if ( indexPath.row == [ regionsInACity count ] ) { // Last row is to show all stores in that city.
                 NSString *cityName = [ [ self.queryData objectAtIndex: indexPath.section ] valueForKey: @"cityName" ];
-                label.text = [ NSString stringWithFormat: @"All stores in %@", cityName ];
+                label.text = [ NSString stringWithFormat: NSLocalizedString(@"All stores in %@",nil), cityName ];
             } else {        
                 label.text = [ [ regionsInACity objectAtIndex: indexPath.row ] valueForKey: @"name" ];
             }
@@ -151,11 +151,11 @@
         }
             
         case categoriesFeatureItem:
-            cell.textLabel.text = @"All stores in souvenir";
+            cell.textLabel.text = NSLocalizedString(@"All stores in souvenir", nil);
             break;
             
         case agesFeatureItem:
-            cell.textLabel.text = @"All stores in 30 years";
+            cell.textLabel.text = NSLocalizedString(@"All stores in 30 years", nil);
             break;
             
         default:

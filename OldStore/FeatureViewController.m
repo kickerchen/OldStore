@@ -33,9 +33,9 @@
 {
     [super viewDidLoad];
     
-    self.regionsCell.textLabel.text = @"List by regions";
-    self.categoriesCell.textLabel.text = @"List by categories";
-    self.agesCell.textLabel.text = @"List by ages";
+    self.regionsCell.textLabel.text = NSLocalizedString(@"List by regions", nil);
+    self.categoriesCell.textLabel.text = NSLocalizedString(@"List by categories", nil);
+    self.agesCell.textLabel.text = NSLocalizedString(@"List by ages", nil);
     
     // Set background image of table view.
     self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Paper_texture_v5_by_bashcorpo.jpeg"]];
@@ -67,21 +67,21 @@
         FeatureContentViewController *featureContentViewController = [segue destinationViewController];
         featureContentViewController.featureItem = regionsFeatureItem;
         featureContentViewController.databaseManager = self.databaseManager;
-        [featureContentViewController setTitle:@"Regions"];
+        [featureContentViewController setTitle: NSLocalizedString( @"Regions", nil )];
         
     } else if ( [[segue identifier] isEqualToString:@"ShowCategories"] ) {
         
         FeatureContentViewController *featureContentViewController = [segue destinationViewController];
         featureContentViewController.featureItem = categoriesFeatureItem;
         featureContentViewController.databaseManager = self.databaseManager;
-        [featureContentViewController setTitle:@"Categories"];
+        [featureContentViewController setTitle: NSLocalizedString( @"Categories", nil)];
         
     } else if ( [[segue identifier] isEqualToString:@"ShowAges"] ) {
         
         FeatureContentViewController *featureContentViewController = [segue destinationViewController];
         featureContentViewController.featureItem = agesFeatureItem;
         featureContentViewController.databaseManager = self.databaseManager;
-        [featureContentViewController setTitle:@"Ages"];        
+        [featureContentViewController setTitle: NSLocalizedString( @"Ages", nil )];
     }
 }
 

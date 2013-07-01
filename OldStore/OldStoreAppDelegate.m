@@ -28,6 +28,8 @@
 
 - (void)setupViewController
 {
+    NSLog(@"local: %@", [[NSLocale currentLocale]localeIdentifier]);
+    
     // Get root view controller.
     UITabBarController *tabBarController = (UITabBarController *)self.window.rootViewController;
     tabBarController.delegate = self;
